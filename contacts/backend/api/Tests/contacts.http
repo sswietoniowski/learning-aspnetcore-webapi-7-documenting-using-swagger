@@ -1,0 +1,10 @@
+@baseUri = http://localhost:5000/api
+@id = 1
+
+### Get all contacts
+
+GET {{baseUri}}/contacts HTTP/1.1
+
+### Get single contact
+
+GET {{baseUri}}/contacts/{{id}} HTTP/1.1
