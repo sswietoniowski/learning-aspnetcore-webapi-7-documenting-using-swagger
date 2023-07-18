@@ -18,6 +18,22 @@ dotnet watch run
 cd ..
 ```
 
+To update NuGet packages consider using [Paket](https://fsprojects.github.io/Paket/) [:file_folder:](https://github.com/fsprojects/Paket).
+
+```cmd
+dotnet new tool-manifest
+dotnet tool install paket
+dotnet tool restore
+dotnet paket init
+dotnet tool restore
+dotnet paket restore
+dotnet paket install
+dotnet paket outdated
+dotnet paket update
+```
+
+You might use Visual Studio or JetBrains Rider to update NuGet packages (it will be a lot simpler :-)).
+
 ## Getting Started with OpenAPI (Swagger)
 
 ### Why Use Swagger / OpenAPI to Document Your API?
