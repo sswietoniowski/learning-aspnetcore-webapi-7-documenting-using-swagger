@@ -97,3 +97,5 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
 ### Branding the UI by Injecting Custom CSS
 
 ### Branding the UI by Injecting a Custom Index Page
+
+## Summary
