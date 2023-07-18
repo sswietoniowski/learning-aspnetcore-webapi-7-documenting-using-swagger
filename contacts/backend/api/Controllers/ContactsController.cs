@@ -5,7 +5,7 @@ using Contacts.WebAPI.Infrastructure.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Contacts.WebAPI.Controllers;
+namespace Contacts.Api.Controllers;
 
 [ApiController]
 [Route("api/contacts")]

@@ -3,7 +3,7 @@ using Contacts.WebAPI.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Contacts.WebAPI.Controllers;
+namespace Contacts.Api.Controllers;
 
 [ApiController]
 [Route("api/contacts/{contactId:int}/phones")]
@@ -27,7 +27,7 @@ public class PhonesController : ControllerBase
         {
             return NotFound();
         }
-            
+
         var phonesDto = contact.Phones
             .Select(p => new PhoneDto()
             {
