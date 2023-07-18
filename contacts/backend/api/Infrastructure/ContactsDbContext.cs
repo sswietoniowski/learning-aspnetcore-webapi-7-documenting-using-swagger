@@ -1,7 +1,7 @@
-﻿using Contacts.WebAPI.Domain;
+﻿using Contacts.Api.Domain;
 using Microsoft.EntityFrameworkCore;
 
-namespace Contacts.WebAPI.Infrastructure;
+namespace Contacts.Api.Infrastructure;
 
 public class ContactsDbContext : DbContext
 {

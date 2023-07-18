@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Contacts.WebAPI.Domain;
-using Contacts.WebAPI.DTOs;
-using Contacts.WebAPI.Infrastructure.Repositories;
+using Contacts.Api.Domain;
+using Contacts.Api.DTOs;
+using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 

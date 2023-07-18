@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contacts.WebAPI.Domain;
+namespace Contacts.Api.Domain;
 
 public class Contact
 {
@@ -14,5 +14,5 @@ public class Contact
     public string LastName { get; set; } = string.Empty;
     [MaxLength(128)]
     public string Email { get; set; } = string.Empty;
-    public List<Phone> Phones { get; set; } = new ();
+    public List<Phone> Phones { get; set; } = new();
 }

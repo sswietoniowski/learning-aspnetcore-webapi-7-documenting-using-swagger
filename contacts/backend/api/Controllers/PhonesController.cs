@@ -1,5 +1,5 @@
-﻿using Contacts.WebAPI.DTOs;
-using Contacts.WebAPI.Infrastructure;
+﻿using Contacts.Api.DTOs;
+using Contacts.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

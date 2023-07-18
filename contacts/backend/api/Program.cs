@@ -1,6 +1,6 @@
 using System.Reflection;
-using Contacts.WebAPI.Infrastructure;
-using Contacts.WebAPI.Infrastructure.Repositories;
+using Contacts.Api.Infrastructure;
+using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,4 +1,4 @@
-﻿namespace Contacts.WebAPI.DTOs;
+﻿namespace Contacts.Api.DTOs;
 
 public class PhoneDto
 {

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Contacts.WebAPI.DTOs;
+namespace Contacts.Api.DTOs;
 
 public class ContactForUpdateDto
 {

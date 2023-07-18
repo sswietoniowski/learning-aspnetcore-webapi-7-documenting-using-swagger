@@ -1,4 +1,4 @@
-﻿namespace Contacts.WebAPI.DTOs;
+﻿namespace Contacts.Api.DTOs;
 
 public class ContactDetailsDto
 {
@@ -7,5 +7,5 @@ public class ContactDetailsDto
     public string LastName { get; set; } = string.Empty;
     public string FullName => $"{FirstName} {LastName}";
     public string Email { get; set; } = string.Empty;
-    public List<PhoneDto> Phones { get; set; } = new ();
+    public List<PhoneDto> Phones { get; set; } = new();
 }

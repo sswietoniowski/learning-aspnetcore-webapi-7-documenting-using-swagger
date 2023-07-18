@@ -1,13 +1,12 @@
-﻿using Contacts.WebAPI.Domain;
+﻿using Contacts.Api.Domain;
 
-namespace Contacts.WebAPI.Infrastructure.Repositories
+namespace Contacts.Api.Infrastructure.Repositories;
+
+public interface IContactsRepository
 {
-    public interface IContactsRepository
-    {
-        IEnumerable<Contact> GetContacts(string? search);
-        Contact? GetContact(int id);
-        void CreateContact(Contact contact);
-        bool UpdateContact(Contact contact);
-        bool DeleteContact(int id);
-    }
+    IEnumerable<Contact> GetContacts(string? search);
+    Contact? GetContact(int id);
+    void CreateContact(Contact contact);
+    bool UpdateContact(Contact contact);
+    bool DeleteContact(int id);
 }

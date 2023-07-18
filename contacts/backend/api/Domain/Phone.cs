@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Contacts.WebAPI.Domain;
+namespace Contacts.Api.Domain;
 
 public class Phone
 {
