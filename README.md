@@ -8,6 +8,16 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
 
 ## Setup
 
+To run API:
+
+```cmd
+cd .\contacts\backend\api
+dotnet restore
+dotnet build
+dotnet watch run
+cd ..
+```
+
 ## Getting Started with OpenAPI (Swagger)
 
 ### Why Use Swagger / OpenAPI to Document Your API?
