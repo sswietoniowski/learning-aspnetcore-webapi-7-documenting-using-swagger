@@ -33,6 +33,7 @@ dotnet paket update
 ```
 
 You might use Visual Studio or JetBrains Rider to update NuGet packages (it will be a lot simpler :-)).
+
 ## Getting Started with OpenAPI (Swagger)
 
 ### Why Use Swagger / OpenAPI to Document Your API?
