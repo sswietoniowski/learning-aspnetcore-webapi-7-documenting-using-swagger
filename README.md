@@ -327,21 +327,69 @@ When you need a little more you can customize Swagger API with attributes and co
 
 ### The Importance of ApiExplorer
 
+`ApiExplorer` is an abstraction on top of ASP.NET Core MVC that exposes metadata about that application.
+
+Shwashbuckle uses `ApiExplorer` to generate the OpenAPI specification.
+
+ApiExplorer is enabled by default, it's registered when calling: `builder.Services.AddControllers()`.
+
 ### Why It's Important to Produce Correct Response Types
+
+An OpenAPI specification should include all possible response types (400, 404, ...) for a method/resource URI:
+
+- allows consumers to act accordingly,
+- our specification must match the reality of our API.
 
 ### Describing Response Types (Status Codes) with ProducesResponseType
 
+To describe response types use `ProducesResponseType`, example:
+
+```csharp
+    // PUT api/contacts/1
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
+    // ...
+```
+
 ### Using API Analyzers to Improve the OpenAPI Specification
+
+Showed during demo.
 
 ### Working with API Conventions
 
+Showed during demo.
+
 ### Attributes Versus Conventions
+
+Conventions:
+
+- are overridden by attributes,
+- one mistake can have dire consequences,
+- good for very simple APIs, hard for anything but the basics.
+
+> **Use attributes instead of conventions!**
+
+Best practices for using attributes:
+
+- use API analyzers, but don't rely on them to give you full coverage,
+- use `[ProducesDefaultResponseType]` but be specific where possible,
+- apply attributes globally where possible.
 
 ### Content Negotiation
 
+> Content negotiation is the mechanism used for serving different representations of a resource at the same URI.
+
 ### Specifying the Response Body Type with the Produces Attribute
 
+Showed during demo.
+
 ### Specifying the Response Body Type with the Consumes Attribute
+
+Showed during demo.
 
 ## Generating OpenAPI Specifications for Advanced Input and Output Scenarios
 
@@ -388,6 +436,10 @@ When you need a little more you can customize Swagger API with attributes and co
 ### Branding the UI by Injecting a Custom Index Page
 
 ## Summary
+
+```
+
+```
 
 ```
 
