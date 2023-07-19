@@ -2,12 +2,11 @@
 using Contacts.Api.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Contacts.WebAPI.Infrastructure.Migrations
+namespace Contacts.Api.Infrastructure.Migrations
 {
     [DbContext(typeof(ContactsDbContext))]
     partial class ContactsDbContextModelSnapshot : ModelSnapshot
@@ -15,34 +14,28 @@ namespace Contacts.WebAPI.Infrastructure.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.9");
 
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Contacts.WebAPI.Domain.Contact", b =>
+            modelBuilder.Entity("Contacts.Api.Domain.Contact", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(128)
-                        .HasColumnType("nvarchar(128)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
                         .HasMaxLength(32)
-                        .HasColumnType("nvarchar(32)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(64)
-                        .HasColumnType("nvarchar(64)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -65,25 +58,23 @@ namespace Contacts.WebAPI.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Contacts.WebAPI.Domain.Phone", b =>
+            modelBuilder.Entity("Contacts.Api.Domain.Phone", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ContactId")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Number")
                         .IsRequired()
                         .HasMaxLength(16)
-                        .HasColumnType("nvarchar(16)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -108,9 +99,9 @@ namespace Contacts.WebAPI.Infrastructure.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Contacts.WebAPI.Domain.Phone", b =>
+            modelBuilder.Entity("Contacts.Api.Domain.Phone", b =>
                 {
-                    b.HasOne("Contacts.WebAPI.Domain.Contact", "Contact")
+                    b.HasOne("Contacts.Api.Domain.Contact", "Contact")
                         .WithMany("Phones")
                         .HasForeignKey("ContactId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -119,7 +110,7 @@ namespace Contacts.WebAPI.Infrastructure.Migrations
                     b.Navigation("Contact");
                 });
 
-            modelBuilder.Entity("Contacts.WebAPI.Domain.Contact", b =>
+            modelBuilder.Entity("Contacts.Api.Domain.Contact", b =>
                 {
                     b.Navigation("Phones");
                 });

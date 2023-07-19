@@ -12,7 +12,7 @@ public class ContactsRepository : IContactsRepository
         _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     }
 
-    public IEnumerable<Contact> GetContacts(string? search)
+    public async Task<IEnumerable<Contact>> GetContactsAsync(string? search)
     {
         var query = _dbContext.Contacts.AsQueryable();
 
@@ -21,26 +21,27 @@ public class ContactsRepository : IContactsRepository
             query = query.Where(c => c.LastName.Contains(search));
         }
 
-        return query.ToList();
+        return await query.ToListAsync();
     }
 
-    public Contact? GetContact(int id)
+    public async Task<Contact?> GetContactAsync(int id)
     {
-        return _dbContext.Contacts.Include(c => c.Phones)
-            .FirstOrDefault(c => c.Id == id);
+        return await _dbContext
+            .Contacts.Include(c => c.Phones)
+            .FirstOrDefaultAsync(c => c.Id == id);
     }
 
-    public void CreateContact(Contact contact)
+    public async Task CreateContactAsync(Contact contact)
     {
         _dbContext.Contacts.Add(contact);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
     }
 
-    public bool UpdateContact(Contact contact)
+    public async Task<bool> UpdateContactAsync(Contact contact)
     {
-        var contactFromDb = _dbContext
+        var contactFromDb = await _dbContext
             .Contacts
-            .FirstOrDefault(c => c.Id == contact.Id);
+            .FirstOrDefaultAsync(c => c.Id == contact.Id);
 
         if (contactFromDb is null)
         {
@@ -50,17 +51,16 @@ public class ContactsRepository : IContactsRepository
         contactFromDb.FirstName = contact.FirstName;
         contactFromDb.LastName = contact.LastName;
         contactFromDb.Email = contact.Email;
+        var quantity = await _dbContext.SaveChangesAsync();
 
-        _dbContext.SaveChanges();
-
-        return true;
+        return quantity == 1;
     }
 
-    public bool DeleteContact(int id)
+    public async Task<bool> DeleteContactAsync(int id)
     {
-        var contact = _dbContext
+        var contact = await _dbContext
             .Contacts
-            .FirstOrDefault(c => c.Id == id);
+            .FirstOrDefaultAsync(c => c.Id == id);
 
         if (contact is null)
         {
@@ -68,8 +68,8 @@ public class ContactsRepository : IContactsRepository
         }
 
         _dbContext.Contacts.Remove(contact);
-        _dbContext.SaveChanges();
+        var quantity = await _dbContext.SaveChangesAsync();
 
-        return true;
+        return quantity == 1;
     }
 }

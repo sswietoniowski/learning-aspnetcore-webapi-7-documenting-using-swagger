@@ -24,9 +24,9 @@ public class ContactsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<IEnumerable<ContactDto>> GetContacts([FromQuery] string? search)
+    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts([FromQuery] string? search)
     {
-        var contacts = _repository.GetContacts(search);
+        var contacts = await _repository.GetContactsAsync(search);
 
         var contactsDto = _mapper.Map<IEnumerable<ContactDto>>(contacts);
 
@@ -39,9 +39,9 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public ActionResult<ContactDetailsDto> GetContact(int id)
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
-        var contact = _repository.GetContact(id);
+        var contact = await _repository.GetContactAsync(id);
 
         if (contact is null)
         {
@@ -58,10 +58,11 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult CreateContact([FromBody] ContactForCreationDto contactForCreationDto)
+    public async Task<IActionResult> CreateContact([FromBody] ContactForCreationDto contactForCreationDto)
     {
         if (contactForCreationDto.FirstName == contactForCreationDto.LastName)
         {
+            // just an example of how to add a custom error to the ModelState
             ModelState.AddModelError("wrongName", "First name and last name cannot be the same.");
         }
 
@@ -72,11 +73,11 @@ public class ContactsController : ControllerBase
 
         var contact = _mapper.Map<Contact>(contactForCreationDto);
 
-        _repository.CreateContact(contact);
+        await _repository.CreateContactAsync(contact);
 
         var contactDto = _mapper.Map<ContactDto>(contact);
 
-        return CreatedAtAction(nameof(GetContact), new { id = contact.Id }, contactDto);
+        return CreatedAtAction(nameof(GetContactDetails), new { id = contact.Id }, contactDto);
     }
 
     // PUT api/contacts/1
@@ -85,12 +86,12 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
+    public async Task<IActionResult> UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
     {
         var contact = _mapper.Map<Contact>(contactForUpdateDto);
         contact.Id = id;
 
-        var success = _repository.UpdateContact(contact);
+        var success = await _repository.UpdateContactAsync(contact);
 
         if (!success)
         {
@@ -105,9 +106,9 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult DeleteContact(int id)
+    public async Task<IActionResult> DeleteContact(int id)
     {
-        var success = _repository.DeleteContact(id);
+        var success = await _repository.DeleteContactAsync(id);
 
         if (!success)
         {
@@ -123,9 +124,9 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public IActionResult PartiallyUpdateContact(int id, [FromBody] JsonPatchDocument<ContactForUpdateDto> patchDocument)
+    public async Task<IActionResult> PartiallyUpdateContact(int id, [FromBody] JsonPatchDocument<ContactForUpdateDto> patchDocument)
     {
-        var contact = _repository.GetContact(id);
+        var contact = await _repository.GetContactAsync(id);
 
         if (contact is null)
         {
@@ -138,7 +139,7 @@ public class ContactsController : ControllerBase
 
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            return new UnprocessableEntityObjectResult(ModelState);
         }
 
         if (!TryValidateModel(contactToBePatched))
@@ -148,7 +149,7 @@ public class ContactsController : ControllerBase
 
         _mapper.Map(contactToBePatched, contact);
 
-        var success = _repository.UpdateContact(contact);
+        var success = await _repository.UpdateContactAsync(contact);
 
         if (!success)
         {
