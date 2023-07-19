@@ -54,14 +54,34 @@ builder.Services.Configure<MvcOptions>(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    // you'll be able to access the API documentation here:
+    // https://localhost:5001/swagger/ContactsAPISpecification/swagger.json
+    options.SwaggerDoc("ContactsAPISpecification", new()
+    {
+        Title = "Contacts API",
+        Version = "1"
+    });
+    var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+    // add XML comments to the Swagger doc
+    options.IncludeXmlComments(xmlCommentsFullPath);
+});
 
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    // to generate Swagger JSON at runtime
     app.UseSwagger();
-    app.UseSwaggerUI();
+    // to serve Swagger UI at https://localhost:5001/swagger
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecification/swagger.json", "Contacts API");
+        options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+    });
 }
 
 app.UseHttpsRedirection();

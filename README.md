@@ -84,35 +84,213 @@ First steps to generate documentation for your first API with Swagger.
 
 ### Getting Started with Swashbuckle from Scratch
 
-Showed during demo.
+Whenever we are creating a new project (WebAPI) Swagger will be configured already using Swashbuckle.
 
 ### Adding Swashbuckle to an Existing Project
 
-Showed during demo.
+To add Swashbuckle to an existing project you need to:
+
+- add nuget to your project:
+
+```cmd
+dotnet add package Swashbuckle.AspNetCore
+```
+
+- configure Swagger in your project, by editing `Program.cs` file:
+
+```csharp
+builder.Services.AddEndpointsApiExplorer();
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    // you'll be able to access the API documentation here:
+    // https://localhost:5001/swagger/ContactsAPISpecification/swagger.json
+    options.SwaggerDoc("ContactsAPISpecification", new()
+    {
+        Title = "Contacts API",
+        Version = "1"
+    });
+});
+// ...
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+```
+
+### Inspecting the Generated OpenAPI Specification
+
+For the test project you can find the documentation (provided that you've already started the project) [here](https://localhost:5001/swagger/ContactsAPISpecification/swagger.json). We might examine the API specification that was generated and look for any errors or mishaps.
 
 ### Adding SwaggerUI to the Project
 
-Showed during demo.
+What you need is already configured in the previous step, but because we've changed the swagger generator, we also need reconfigure the Swagger UI:
+
+```csharp
+    // to serve Swagger UI at https://localhost:5001/swagger
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecification/swagger.json", "Contacts API");
+        options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+    });
+```
 
 ### Incorporating XML Comments on Actions
 
-Showed during demo.
+We can provide more information to Swagger with XML comments on our actions.
+
+To do that you should add an XML comment to the action:
+
+```csharp
+    /// <summary>
+    /// Get a contact details by their id
+    /// </summary>
+    /// <param name="id">The if of the contact you want to get</param>
+    // GET api/contacts/1
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    // ...
+```
+
+But you also need to configure Swagger to use XML comments:
+
+```csharp
+    // register Swagger generator
+    builder.Services.AddSwaggerGen(options =>
+    {
+        // you'll be able to access the API documentation here:
+        // https://localhost:5001/swagger/ContactsAPISpecification/swagger.json
+        options.SwaggerDoc("ContactsAPISpecification", new()
+        {
+            Title = "Contacts API",
+            Version = "1"
+        });
+        var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+        var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
+        // add XML comments to the Swagger doc
+        options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "Contacts.API.xml"));
+    });
+```
+
+And you'll need to enable XML documentation generation in your project file:
+
+```xml
+<PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>Contacts.Api.xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+</PropertyGroup>
+```
 
 ### Incorporating XML Comments on Model Classes
 
-Showed during demo.
+In our case model classes are the DTOs that represent contacts.
+
+We can (and should) add comments to them, example:
+
+```csharp
+public class ContactDetailsDto
+{
+    /// <summary>
+    /// The id of the contact
+    /// </summary>
+    public int Id { get; set; }
+    /// <summary>
+    /// The first name of the contact
+    /// </summary>
+    public string FirstName { get; set; } = string.Empty;
+    /// <summary>
+    /// The last name of the contact
+    /// </summary>
+    public string LastName { get; set; } = string.Empty;
+    /// <summary>
+    /// The full name of the contact
+    /// </summary>
+    public string FullName => $"{FirstName} {LastName}";
+    /// <summary>
+    /// The email of the contact
+    /// </summary>
+    public string Email { get; set; } = string.Empty;
+    /// <summary>
+    /// The phones of the contact
+    /// </summary>
+    public List<PhoneDto> Phones { get; set; } = new();
+}
+```
 
 ### Improving Documentation with Data Annotations
 
-Showed during demo.
+We can improve our documentation with data annotations (like `[Required]`, `[MaxLength(...)]`, ...), example:
+
+```csharp
+/// <summary>
+/// The contact for creation
+/// </summary>
+public class ContactForCreationDto
+{
+    /// <summary>
+    /// The first name of the contact (must be different from the last name)
+    /// </summary>
+    [Required]
+    [MaxLength(32)]
+    public string FirstName { get; set; } = string.Empty;
+    /// <summary>
+    /// The last name of the contact (must be different from the first name)
+    /// </summary>
+    [Required]
+    [StringLength(64)]
+    public string LastName { get; set; } = string.Empty;
+    /// <summary>
+    /// The email of the contact
+    /// </summary>
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+}
+```
 
 ### Improving Documentation with Examples
 
-Showed during demo.
+We might be able to improve our documentation even further with examples (like showing how to use `PATCH` properly) by using `remarks`:
+
+```csharp
+    /// <summary>
+    /// Update a contact partially
+    /// </summary>
+    /// <param name="id">The id of the contact you want to update</param>
+    /// <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
+    /// <returns>An IActionResult</returns>
+    /// <remarks>
+    /// Sample request (this request updates the email of the contact):
+    /// PATCH /api/contacts/id
+    /// [
+    ///     {
+    ///         "op": "replace",
+    ///         "path": "/email",
+    ///         "value": "newemail@newemail"
+    ///     }
+    /// ]
+    /// </remarks>
+    // PATCH api/contacts/1
+    [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> PartiallyUpdateContact(int id, [FromBody] JsonPatchDocument<ContactForUpdateDto> patchDocument)
+    // ...
+```
 
 ### Ignoring Warnings Where Appropriate
 
-Showed during demo.
+To prevent warnings generation for the parts of our code that were not documented with XL comments we already added this section to to project file:
+
+```xml
+<NoWarn>$(NoWarn);1591</NoWarn>
+```
 
 ### Adding API Information and Description
 
@@ -185,3 +363,15 @@ When you need a little more you can customize Swagger API with attributes and co
 ### Branding the UI by Injecting a Custom Index Page
 
 ## Summary
+
+```
+
+```
+
+```
+
+```
+
+```
+
+```

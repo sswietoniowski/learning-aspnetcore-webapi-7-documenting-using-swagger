@@ -33,6 +33,11 @@ public class ContactsController : ControllerBase
         return Ok(contactsDto);
     }
 
+    /// <summary>
+    /// Get a contact details by their id
+    /// </summary>
+    /// <param name="id">The if of the contact you want to get</param>
+    /// <returns>An ActionResult of type ContactDetailsDto</returns>
     // GET api/contacts/1
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -117,6 +122,24 @@ public class ContactsController : ControllerBase
         return NoContent();
     }
 
+    /// <summary>
+    /// Update a contact partially
+    /// </summary>
+    /// <param name="id">The id of the contact you want to update</param>
+    /// <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
+    /// <returns>An IActionResult</returns>
+    /// <remarks>
+    /// Sample request (this request updates the email of the contact):
+    /// 
+    /// PATCH /api/contacts/id \
+    /// [ \
+    ///     { \
+    ///         "op": "replace", \
+    ///         "path": "/email", \
+    ///         "value": "newemail@newemail" \
+    ///     } \
+    /// ]
+    /// </remarks>
     // PATCH api/contacts/1
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
