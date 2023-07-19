@@ -34,7 +34,6 @@ public class ContactsController : ControllerBase
     }
 
     // GET api/contacts/1
-    // GET api/contacts/{id}
     [HttpGet("{id:int}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
