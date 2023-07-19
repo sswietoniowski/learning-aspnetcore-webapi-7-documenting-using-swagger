@@ -13,6 +13,7 @@ To run API:
 ```cmd
 cd .\contacts\backend\api
 dotnet restore
+dotnet ef database update
 dotnet build
 dotnet watch run
 cd ..
