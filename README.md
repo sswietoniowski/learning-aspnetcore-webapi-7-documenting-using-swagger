@@ -122,7 +122,7 @@ if (app.Environment.IsDevelopment())
 
 For the test project you can find the documentation (provided that you've already started the project) [here](https://localhost:5001/swagger/ContactsAPISpecification/swagger.json). We might examine the API specification that was generated and look for any errors or mishaps.
 
-### Adding SwaggerUI to the Project
+### Adding Swagger UI to the Project
 
 What you need is already configured in the previous step, but because we've changed the swagger generator, we also need reconfigure the Swagger UI:
 
