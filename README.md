@@ -80,25 +80,47 @@ A promise, and and advantage.
 
 ## Documenting Your First API with OpenAPI (Swagger)
 
+First steps to generate documentation for your first API with Swagger.
+
 ### Getting Started with Swashbuckle from Scratch
+
+Showed during demo.
 
 ### Adding Swashbuckle to an Existing Project
 
+Showed during demo.
+
 ### Adding SwaggerUI to the Project
+
+Showed during demo.
 
 ### Incorporating XML Comments on Actions
 
+Showed during demo.
+
 ### Incorporating XML Comments on Model Classes
+
+Showed during demo.
 
 ### Improving Documentation with Data Annotations
 
+Showed during demo.
+
 ### Improving Documentation with Examples
+
+Showed during demo.
 
 ### Ignoring Warnings Where Appropriate
 
+Showed during demo.
+
 ### Adding API Information and Description
 
+Showed during demo.
+
 ## Customizing OpenAPI Generation with Attributes and Conventions
+
+When you need a little more you can customize Swagger API with attributes and conventions.
 
 ### The Importance of ApiExplorer
 
