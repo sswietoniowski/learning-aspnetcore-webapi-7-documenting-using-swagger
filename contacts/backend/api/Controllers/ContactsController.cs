@@ -62,6 +62,7 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    // file deepcode ignore AntiforgeryTokenDisabled: not applicable to the API, false warning by Snyk
     public async Task<IActionResult> CreateContact([FromBody] ContactForCreationDto contactForCreationDto)
     {
         if (contactForCreationDto.FirstName == contactForCreationDto.LastName)

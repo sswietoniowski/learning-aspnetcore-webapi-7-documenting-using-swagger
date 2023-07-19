@@ -437,18 +437,4 @@ Showed during demo.
 
 ## Summary
 
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
-
-```
+Now you know a little bit more about Swagger and how it can help you to document your API :-).
