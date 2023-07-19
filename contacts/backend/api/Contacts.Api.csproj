@@ -27,6 +27,7 @@
 		<GenerateDocumentationFile>true</GenerateDocumentationFile>
 		<DocumentationFile>Contacts.Api.xml</DocumentationFile>
 		<NoWarn>$(NoWarn);1591</NoWarn>
+		<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

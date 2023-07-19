@@ -3,6 +3,10 @@ using Contacts.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
+// disable warning for API1000 because we don't want to use ProducesResponseTypeAttribute
+// on every action (we did that in "ContactsController" for demonstration purposes)
+#pragma warning disable API1000
+
 namespace Contacts.Api.Controllers;
 
 [ApiController]

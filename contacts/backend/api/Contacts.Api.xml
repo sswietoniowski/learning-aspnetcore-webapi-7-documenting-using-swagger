@@ -10,6 +10,7 @@
             </summary>
             <param name="id">The if of the contact you want to get</param>
             <returns>An ActionResult of type ContactDetailsDto</returns>
+            <response code="200">Returns the requested contact</response>
         </member>
         <member name="M:Contacts.Api.Controllers.ContactsController.PartiallyUpdateContact(System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Contacts.Api.DTOs.ContactForUpdateDto})">
             <summary>

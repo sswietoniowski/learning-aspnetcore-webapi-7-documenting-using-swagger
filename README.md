@@ -355,13 +355,151 @@ To describe response types use `ProducesResponseType`, example:
     // ...
 ```
 
+Remember to return `ActionResult<T>` (whenever possible) instead of `IActionResult` for Swagger to be able to generate the specification correctly (and infer the response type).
+
+In some situations we can specify the type returned with `ProduceResponseType` like so:
+
+```csharp
+    // we can specify the type of the response, but it's not required
+    [ProducesResponseType(StatusCodes.Status200OK,  Type = typeof(ContactDetailsDto))]
+```
+
+To return info about an error ASP.NET Core uses `ProblemDetails` class to generate a response. This class is compatible with the APIs specification for [problem details](https://datatracker.ietf.org/doc/html/rfc7807).
+
+We can use XML comments to provide description for a given status code:
+
+```csharp
+    /// <response code="200">Returns the requested contact</response>
+```
+
+If some response types can be expected for all actions, we can add info about them to the controller instead of adding them to every action:
+
+```csharp
+    [ApiController]
+    [Route("api/contacts")]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public class ContactsController : ControllerBase
+    // ...
+```
+
+**Notice**:
+
+In my case I had to add pragma directives to my actions because they didn't honor above attributes and caused warnings to be generated:
+
+```csharp
+#pragma warning disable API1000 // added to the controller already
+            return BadRequest(ModelState);
+#pragma warning restore API1000
+```
+
+There is even a way to apply certain response types globally, to do that, we can edit our `Program.cs`:
+
+```csharp
+builder.Services.AddControllers(configure =>
+{
+    configure.ReturnHttpNotAcceptable = true;
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+}).AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+});
+```
+
 ### Using API Analyzers to Improve the OpenAPI Specification
 
-Showed during demo.
+To verify if our specification is correct we can use API analyzers.
+
+To use it we must enable them in the project file:
+
+```xml
+<PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <DocumentationFile>Contacts.Api.xml</DocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <!-- enable API analyzers -->
+    <IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+</PropertyGroup>
+```
+
+By enabling that setting we will get a warning for every action that doesn't have a `ProducesResponseType` attribute or
+returns undeclared status code.
+
+Now we can apply appropriate attributes to fix the warnings. We can also use `[ProducesDefaultResponseType]` attribute to mark all actions that don't have a `ProducesResponseType` attribute. The later is not recommended, because it's better to be specific.
 
 ### Working with API Conventions
 
-Showed during demo.
+To apply conventions we need to add a convention to the action like so:
+
+```csharp
+    [HttpGet("{id:int}")]
+    [ApiConventionMethod(typeof(DefaultApiConventions), nameof(DefaultApiConventions.Get))]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    // ...
+```
+
+These conventions are defined in `DefaultApiConventions` class. They work best if applied to a controller scaffolded by Visual Studio.
+
+We can also apply these conventions at the controller level by adding `[ApiConventionType(typeof(DefaultApiConventions))]` attribute to the controller.
+
+```csharp
+    [ApiController]
+    [Route("api/contacts")]
+    [ApiConventionType(typeof(DefaultApiConventions))]
+    public class ContactsController : ControllerBase
+    // ...
+```
+
+There is even a way to apply these conventions at the assembly level, by adding `[assembly: ApiConventionType(typeof(DefaultApiConventions))]` to the `Program.cs` file.
+
+```csharp
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
+
+var builder = WebApplication.CreateBuilder(args);
+// ...
+```
+
+### Creating Custom Conventions
+
+We can create our own conventions.
+
+For example to treat `InsertXXX` action as `POST` we can do:
+
+```csharp
+#nullable disable // to prevent an exception from being thrown (.NET 6, should be fixed in .NET 7)
+public static class CustomConventions
+{
+    [ProducesDefaultResponseType]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Prefix)]
+    public static void Insert(
+        [ApiConventionNameMatch(ApiConventionNameMatchBehavior.Any)]
+        [ApiConventionTypeMatch(ApiConventionTypeMatchBehavior.Any)]
+        object model)
+    {
+    }
+}
+#nullable restore
+```
+
+To use this convention we can now add it to our action like so:
+
+```csharp
+    [HttpPost]
+    [ApiConventionMethod(typeof(CustomConventions), nameof(CustomConventions.Insert))]
+    public async Task<ActionResult<ContactDetailsDto>> InsertContact(ContactForCreationDto contactForCreationDto)
+    // ...
+```
+
+If you're interested in this, check out the [this](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/conventions?view=aspnetcore-7.0) article.
+
+While this is a simple example, it's not recommended to use conventions for anything but the basics.
 
 ### Attributes Versus Conventions
 
@@ -370,6 +508,8 @@ Conventions:
 - are overridden by attributes,
 - one mistake can have dire consequences,
 - good for very simple APIs, hard for anything but the basics.
+
+**Notice:**
 
 > **Use attributes instead of conventions!**
 
@@ -383,13 +523,80 @@ Best practices for using attributes:
 
 > Content negotiation is the mechanism used for serving different representations of a resource at the same URI.
 
+For example, we can return a contact in `JSON` or `XML` format.
+
+To retrieve an `XML` format instead of `JSON` we can use `Accept` header:
+
+```cmd
+curl -v -H "Accept: application/xml" https://localhost:5001/api/contacts/1
+```
+
+To support content negotiation we need to add `AddXmlDataContractSerializerFormatters` to our project:
+
+```csharp
+builder.Services.AddControllers(configure =>
+{
+    configure.ReturnHttpNotAcceptable = true;
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+}).AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+}).AddXmlDataContractSerializerFormatters();
+```
+
+Provided that we specified `Produces` attribute for our actions, we can now return `XML` format:
+
+```csharp
+    [HttpGet("{id:int}")]
+    [Produces("application/json", "application/xml")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    // ...
+```
+
 ### Specifying the Response Body Type with the Produces Attribute
 
-Showed during demo.
+We already used this attribute (`[Produces(...)]`) to specify the response type, but we can also use it to specify the response body type:
 
-### Specifying the Response Body Type with the Consumes Attribute
+```csharp
+    [HttpGet("{id:int}")]
+    [Produces("application/json", "application/xml")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    // ...
+```
 
-Showed during demo.
+### Specifying the Request Body Type with the Consumes Attribute
+
+Again we already did that with `[Consumes(...)]` attribute:
+
+```csharp
+    [HttpPost]
+    [Consumes("application/json")]
+    [Produces("application/json", "application/xml")]
+    [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(ContactDetailsDto))]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ContactDetailsDto>> InsertContact(ContactForCreationDto contactForCreationDto)
+    // ...
+```
+
+Be aware that you might encounter in Swagger UI for the action that returns an array [this](https://github.com/swagger-api/swagger-ui/issues/4650) error. Still applicable in .NET 7.
+
+If you want to generate an error in case of and invalid media type, please add this to `Program.cs`:
+
+```csharp
+builder.Services.AddControllers(configure =>
+{
+    configure.ReturnHttpNotAcceptable = true;
+    // ...
+```
 
 ## Generating OpenAPI Specifications for Advanced Input and Output Scenarios
 

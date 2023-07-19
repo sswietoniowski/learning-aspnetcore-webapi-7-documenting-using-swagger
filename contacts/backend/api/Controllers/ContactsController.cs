@@ -9,6 +9,9 @@ namespace Contacts.Api.Controllers;
 
 [ApiController]
 [Route("api/contacts")]
+[Produces("application/json", "application/xml")]
+[Consumes("application/json")]
+[ProducesResponseType(StatusCodes.Status406NotAcceptable)]
 public class ContactsController : ControllerBase
 {
     private readonly IContactsRepository _repository;
@@ -23,7 +26,6 @@ public class ContactsController : ControllerBase
     // GET api/contacts?search=ski
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts([FromQuery] string? search)
     {
         var contacts = await _repository.GetContactsAsync(search);
@@ -38,11 +40,11 @@ public class ContactsController : ControllerBase
     /// </summary>
     /// <param name="id">The if of the contact you want to get</param>
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
+    /// <response code="200">Returns the requested contact</response>
     // GET api/contacts/1
     [HttpGet("{id:int}")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK,  Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
         var contact = await _repository.GetContactAsync(id);
@@ -60,8 +62,6 @@ public class ContactsController : ControllerBase
     // POST api/contacts
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     // file deepcode ignore AntiforgeryTokenDisabled: not applicable to the API, false warning by Snyk
     public async Task<IActionResult> CreateContact([FromBody] ContactForCreationDto contactForCreationDto)
     {
@@ -73,7 +73,9 @@ public class ContactsController : ControllerBase
 
         if (!ModelState.IsValid)
         {
+#pragma warning disable API1000 // added to the controller already
             return BadRequest(ModelState);
+#pragma warning restore API1000
         }
 
         var contact = _mapper.Map<Contact>(contactForCreationDto);
@@ -88,9 +90,7 @@ public class ContactsController : ControllerBase
     // PUT api/contacts/1
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
     {
         var contact = _mapper.Map<Contact>(contactForUpdateDto);
@@ -110,7 +110,6 @@ public class ContactsController : ControllerBase
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteContact(int id)
     {
         var success = await _repository.DeleteContactAsync(id);
@@ -144,9 +143,8 @@ public class ContactsController : ControllerBase
     // PATCH api/contacts/1
     [HttpPatch("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<IActionResult> PartiallyUpdateContact(int id, [FromBody] JsonPatchDocument<ContactForUpdateDto> patchDocument)
     {
         var contact = await _repository.GetContactAsync(id);
@@ -167,7 +165,9 @@ public class ContactsController : ControllerBase
 
         if (!TryValidateModel(contactToBePatched))
         {
+#pragma warning disable API1000 // added to the controller already
             return BadRequest(ModelState);
+#pragma warning restore API1000
         }
 
         _mapper.Map(contactToBePatched, contact);

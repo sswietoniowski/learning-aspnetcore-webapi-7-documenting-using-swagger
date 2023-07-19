@@ -32,11 +32,13 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers(configure =>
 {
     configure.ReturnHttpNotAcceptable = true;
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
 }).AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-});
+}).AddXmlDataContractSerializerFormatters();
 
 builder.Services.Configure<MvcOptions>(options =>
 {
