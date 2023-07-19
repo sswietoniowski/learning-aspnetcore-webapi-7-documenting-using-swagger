@@ -48,11 +48,11 @@ Clear documentation saves time and money.
 
 ### Clearing up the Terminology Confusion
 
-[`OpenAPI Specification`](https://github.com/OAI/OpenAPI-Specification) describes the capabilities of your API, and how to interact with it. It's standarized, an in `JSON` or `YAML` format.
+[`OpenAPI Specification`](https://github.com/OAI/OpenAPI-Specification) describes the capabilities of your API, and how to interact with it. It's standarized, and in `JSON` or `YAML` format.
 
 OpenAPI 3 is the current version.
 
-"Swagger" can be used, but "OpenAPI" is the preferred term.
+Term "Swagger" can be used, but "OpenAPI" is the preferred term.
 
 OpenAPI specification and Swagger specification are the same thing.
 
@@ -285,7 +285,7 @@ We might be able to improve our documentation even further with examples (like s
 
 ### Ignoring Warnings Where Appropriate
 
-To prevent warnings generation for the parts of our code that were not documented with XL comments we already added this section to to project file:
+To prevent warnings generation for the parts of our code that were not documented with XML comments we already added this section to our project file:
 
 ```xml
 <NoWarn>$(NoWarn);1591</NoWarn>
@@ -414,7 +414,7 @@ builder.Services.AddControllers(configure =>
 
 To verify if our specification is correct we can use API analyzers.
 
-To use it we must enable them in the project file:
+To do that we must enable them in the project file:
 
 ```xml
 <PropertyGroup>
@@ -429,7 +429,9 @@ To use it we must enable them in the project file:
 By enabling that setting we will get a warning for every action that doesn't have a `ProducesResponseType` attribute or
 returns undeclared status code.
 
-Now we can apply appropriate attributes to fix the warnings. We can also use `[ProducesDefaultResponseType]` attribute to mark all actions that don't have a `ProducesResponseType` attribute. The later is not recommended, because it's better to be specific.
+Now we can apply appropriate attributes to fix the warnings.
+
+We can also use `[ProducesDefaultResponseType]` attribute to mark all actions that don't have a `ProducesResponseType` attribute. The later is not recommended, because it's better to be specific.
 
 ### Working with API Conventions
 
@@ -496,7 +498,7 @@ To use this convention we can now add it to our action like so:
     // ...
 ```
 
-If you're interested in this, check out the [this](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/conventions?view=aspnetcore-7.0) article.
+If you're interested in this, check out [this](https://learn.microsoft.com/en-us/aspnet/core/web-api/advanced/conventions?view=aspnetcore-7.0) article.
 
 While this is a simple example, it's not recommended to use conventions for anything but the basics.
 
@@ -559,7 +561,7 @@ Provided that we specified `Produces` attribute for our actions, we can now retu
 
 ### Specifying the Response Body Type with the Produces Attribute
 
-We already used this attribute (`[Produces(...)]`) to specify the response type, but we can also use it to specify the response body type:
+We already used this attribute (`[Produces(...)]`):
 
 ```csharp
     [HttpGet("{id:int}")]
@@ -588,7 +590,7 @@ Again we already did that with `[Consumes(...)]` attribute:
 
 Be aware that you might encounter in Swagger UI for the action that returns an array [this](https://github.com/swagger-api/swagger-ui/issues/4650) error. Still applicable in .NET 7.
 
-If you want to generate an error in case of and invalid media type, please add this to `Program.cs`:
+If you want to generate an error in case of an invalid media type, please add this to `Program.cs`:
 
 ```csharp
 builder.Services.AddControllers(configure =>
