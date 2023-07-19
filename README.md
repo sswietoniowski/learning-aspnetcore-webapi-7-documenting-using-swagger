@@ -16,7 +16,6 @@ dotnet restore
 dotnet ef database update
 dotnet build
 dotnet watch run
-cd ..
 ```
 
 To update NuGet packages consider using [Paket](https://fsprojects.github.io/Paket/) [:file_folder:](https://github.com/fsprojects/Paket).
