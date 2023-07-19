@@ -37,9 +37,46 @@ You might use Visual Studio or JetBrains Rider to update NuGet packages (it will
 
 ## Getting Started with OpenAPI (Swagger)
 
+Gentle introduction to OpenAPI (Swagger).
+
 ### Why Use Swagger / OpenAPI to Document Your API?
 
+Public APIs need documentation, but so do in-company APIs.
+
+Documentation leads to knowledge leads to adoption.
+
+Clear documentation saves time and money.
+
 ### Clearing up the Terminology Confusion
+
+[`OpenAPI Specification`](https://github.com/OAI/OpenAPI-Specification) describes the capabilities of your API, and how to interact with it. It's standarized, an in `JSON` or `YAML` format.
+
+OpenAPI 3 is the current version.
+
+"Swagger" can be used, but "OpenAPI" is the preferred term.
+
+OpenAPI specification and Swagger specification are the same thing.
+
+`Swagger` is a set of open-source built around that OpenAPI specification.
+
+[`Swagger UI`](https://swagger.io/tools/swagger-ui/) [:file_folder:](https://github.com/swagger-api/swagger-ui) renders a documentation UI from the specification.
+
+[`Swagger Editor`](https://swagger.io/tools/swagger-editor/) [:file_folder:](https://github.com/swagger-api/swagger-editor) helps with creating the specification.
+
+[`Swagger Codegen`](https://swagger.io/tools/swagger-codegen/) [:file_folder:](https://github.com/swagger-api/swagger-codegen) consists of a set of tools that help with generating client classes, tests, ... from the specification.
+
+[`Redoc`](https://redocly.github.io/redoc/) [:file_folder:](https://github.com/Redocly/redoc) is an alternative to Swagger UI.
+
+[`Swashbuckle.AspNetCore`](https://www.nuget.org/packages/Swashbuckle.AspNetCore) [:file_folder](https://github.com/domaindrivendev/Swashbuckle.AspNetCore) helps with working with OpenAPI in ASP.NET Core:
+
+- generates an OpenAPI specification from your API,
+- wraps Swagger UI and provides and embedded version of it.
+
+[`NSwag`](https://www.nuget.org/packages/NSwag.Core) [:file_folder:](https://github.com/RicoSuter/NSwag) is an alternative to Swashbuckle.AspNetCore.
+
+> Standards-based development allows you to mix and match components based on that standard.
+
+A promise, and and advantage.
 
 ## Documenting Your First API with OpenAPI (Swagger)
 
