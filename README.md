@@ -294,7 +294,32 @@ To prevent warnings generation for the parts of our code that were not documente
 
 ### Adding API Information and Description
 
-Showed during demo.
+We can add more information describing our API, like so:
+
+```csharp
+    options.SwaggerDoc("ContactsAPISpecification", new()
+    {
+        Title = "Contacts API",
+        Version = "1",
+        // Description of the API
+        Description = "Contacts API for managing contacts",
+        // Contact information for the API
+        Contact = new()
+        {
+            Name = "John Doe",
+            Email = "jdoe@getnada.com",
+            Url = new("https://www.twitter.com/jdoe")
+        },
+        // License information for the API
+        License = new()
+        {
+            Name = "MIT",
+            Url = new("https://opensource.org/licenses/MIT")
+        },
+        // Terms of Service
+        // TermsOfService = ...
+    });
+```
 
 ## Customizing OpenAPI Generation with Attributes and Conventions
 

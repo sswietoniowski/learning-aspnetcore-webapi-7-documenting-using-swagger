@@ -56,7 +56,7 @@ public class RequestHeaderMatchesMediaTypeAttribute : Attribute, IActionConstrai
             return false;
         }
 
-        var parsedRequestMediaType = new MediaType(requestHeaders[_requestHeaderToMatch]);
+        var parsedRequestMediaType = new MediaType(requestHeaders[_requestHeaderToMatch]!);
 
         // if one of the media types matches, return true
         foreach (var mediaType in _mediaTypes)

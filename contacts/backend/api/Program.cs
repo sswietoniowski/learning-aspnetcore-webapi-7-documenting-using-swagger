@@ -62,7 +62,24 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("ContactsAPISpecification", new()
     {
         Title = "Contacts API",
-        Version = "1"
+        Version = "1",
+        // Description of the API
+        Description = "Contacts API for managing contacts",
+        // Contact information for the API
+        Contact = new()
+        {
+            Name = "John Doe",
+            Email = "jdoe@getnada.com",
+            Url = new("https://www.twitter.com/jdoe")
+        },
+        // License information for the API
+        License = new()
+        {
+            Name = "MIT",
+            Url = new("https://opensource.org/licenses/MIT")
+        },
+        // Terms of Service
+        // TermsOfService = ...
     });
     var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
