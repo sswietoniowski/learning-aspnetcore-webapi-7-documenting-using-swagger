@@ -872,7 +872,7 @@ curl -v -X POST -H "Content-Type: application/vnd.company.contactwithphonesforcr
 
 At this point our API would work, but Swagger UI won't start.
 
-Again the culprit is the conflict between our actions. We need to resolve it. Again its limitations of Shwashbuckle.
+Again the culprit is the conflict between our actions. We need to resolve it. Again its due to limitations of Shwashbuckle.
 
 To solve it we need to add a new filter:
 
@@ -916,6 +916,8 @@ Surely we need to register our filter in `Program.cs`:
 ```csharp
     options.OperationFilter<CreateContactOperationFilter>();
 ```
+
+It seems to work, but I'm not sure whether it is really working as intended :-).
 
 ### Advanced Scenarios
 

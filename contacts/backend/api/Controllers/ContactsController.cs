@@ -43,7 +43,7 @@ public class ContactsController : ControllerBase
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
     /// <response code="200">Returns the requested contact</response>
     // GET api/contacts/1
-    [HttpGet("{id:int}")]
+    [HttpGet("{id:int}", Name = "GetContact")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequestHeaderMatchesMediaType("Accept", "application/json", "application/xml")]
@@ -68,7 +68,7 @@ public class ContactsController : ControllerBase
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
     /// <response code="200">Returns the requested contact</response>
     // GET api/contacts/1
-    [HttpGet("{id:int}", Name = "GetContact")]
+    [HttpGet("{id:int}")]
     [Produces("application/vnd.company.contact+json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,10 +93,12 @@ public class ContactsController : ControllerBase
     /// </summary>
     /// <param name="contactForCreationDto">The contact to create</param>
     /// <returns>An IActionResult</returns>
-    /// <response cod="422">Validation error</response>
+    /// <response code="201">Returns the newly created contact</response>
+    /// <response code="422">Validation error</response>
     // POST api/contacts
-    [HttpPost]
+    [HttpPost(Name = "CreateContact")]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [Consumes("application/json")]
     [RequestHeaderMatchesMediaType("Content-Type", "application/json")]
     // file deepcode ignore AntiforgeryTokenDisabled: not applicable to the API, false warning by Snyk
@@ -129,10 +131,12 @@ public class ContactsController : ControllerBase
     /// </summary>
     /// <param name="contactWithPhonesForCreationDto">The contact to create</param>
     /// <returns>An IActionResult</returns>
-    /// <response cod="422">Validation error</response>
+    /// <response code="201">Returns the newly created contact</response>
+    /// <response code="422">Validation error</response>
     // POST api/contacts
-    [HttpPost(Name = "CreateContact")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [Consumes("application/vnd.company.contactwithphonesforcreation+json")]
     [RequestHeaderMatchesMediaType("Content-Type", "application/vnd.company.contactwithphonesforcreation+json")]
     [ApiExplorerSettings(IgnoreApi = true)] // this will hide the action from the Swagger UI and thus resolve the conflict
@@ -165,6 +169,7 @@ public class ContactsController : ControllerBase
     [HttpPut("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     [Consumes("application/json")]
     public async Task<IActionResult> UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
     {

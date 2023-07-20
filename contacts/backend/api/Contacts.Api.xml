@@ -26,7 +26,8 @@
             </summary>
             <param name="contactForCreationDto">The contact to create</param>
             <returns>An IActionResult</returns>
-            <response cod="422">Validation error</response>
+            <response code="201">Returns the newly created contact</response>
+            <response code="422">Validation error</response>
         </member>
         <member name="M:Contacts.Api.Controllers.ContactsController.CreateContactWithPhones(Contacts.Api.DTOs.ContactWithPhonesForCreationDto)">
             <summary>
@@ -34,7 +35,8 @@
             </summary>
             <param name="contactWithPhonesForCreationDto">The contact to create</param>
             <returns>An IActionResult</returns>
-            <response cod="422">Validation error</response>
+            <response code="201">Returns the newly created contact</response>
+            <response code="422">Validation error</response>
         </member>
         <member name="M:Contacts.Api.Controllers.ContactsController.PartiallyUpdateContact(System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Contacts.Api.DTOs.ContactForUpdateDto})">
             <summary>

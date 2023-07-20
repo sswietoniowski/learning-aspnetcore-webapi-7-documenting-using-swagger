@@ -16,13 +16,12 @@ public class GetContactOperationFilter : IOperationFilter
 
         if (operation.Responses.Any(response => response.Key == StatusCodes.Status200OK.ToString()))
         {
+            var schema = context.SchemaGenerator.GenerateSchema(typeof(ContactDetailsDto), context.SchemaRepository);
+
             operation.Responses[StatusCodes.Status200OK.ToString()].Content
                 .Add(
                     "application/vnd.company.contact+json",
-                    new OpenApiMediaType
-                    {
-                        Schema = context.SchemaGenerator.GenerateSchema(typeof(ContactDto), context.SchemaRepository)
-                    });
+                    new OpenApiMediaType { Schema = schema });
         }
     }
 }
