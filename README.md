@@ -662,6 +662,12 @@ As APIs evolve, different versions start to co-exists. There are different versi
   - `Accept: application/vnd.contacts.v1+json`,
   - `Accept: application/vnd.contacts.v2+json`.
 
+While there are many different strategies, you should ask yourself: _"Do I really need to version my API?"_.
+
+Maybe not :-), [here](https://www.hmeid.com/blog/just-say-no-to-versioning) you'll find some arguments against versioning.
+
+Even Roy Fielding (the creator of REST) [said](https://www.infoq.com/articles/roy-fielding-on-versioning/) that versioning is not that great.
+
 ### Versioning Your API
 
 Showed during demo.
