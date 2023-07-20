@@ -4,10 +4,8 @@ using Microsoft.Net.Http.Headers;
 
 namespace Contacts.Api.Configurations.Attributes;
 
-[AttributeUsage(AttributeTargets.All, Inherited = true,
-        AllowMultiple = true)]
-public class RequestHeaderMatchesMediaTypeAttribute : Attribute,
-        IActionConstraint
+[AttributeUsage(AttributeTargets.All, Inherited = true, AllowMultiple = true)]
+public class RequestHeaderMatchesMediaTypeAttribute : Attribute, IActionConstraint
 {
     private readonly MediaTypeCollection _mediaTypes = new();
     private readonly string _requestHeaderToMatch;
@@ -17,10 +15,10 @@ public class RequestHeaderMatchesMediaTypeAttribute : Attribute,
         string mediaType, params string[] otherMediaTypes)
     {
         _requestHeaderToMatch = requestHeaderToMatch
-           ?? throw new ArgumentNullException(nameof(requestHeaderToMatch));
+            ?? throw new ArgumentNullException(nameof(requestHeaderToMatch));
 
         // check if the inputted media types are valid media types
-        // and add them to the _mediaTypes collection                     
+        // and add them to the _mediaTypes collection
 
         if (MediaTypeHeaderValue.TryParse(mediaType,
             out MediaTypeHeaderValue? parsedMediaType))
@@ -36,7 +34,7 @@ public class RequestHeaderMatchesMediaTypeAttribute : Attribute,
         foreach (var otherMediaType in otherMediaTypes)
         {
             if (MediaTypeHeaderValue.TryParse(otherMediaType,
-               out MediaTypeHeaderValue? parsedOtherMediaType))
+                out MediaTypeHeaderValue? parsedOtherMediaType))
             {
                 _mediaTypes.Add(parsedOtherMediaType);
             }

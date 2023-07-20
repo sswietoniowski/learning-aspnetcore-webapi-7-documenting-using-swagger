@@ -48,7 +48,7 @@
              <remarks>
              Sample request (this request updates the **email** of the contact):  
             
-             ```json
+             ```http
              PATCH /api/contacts/id
              [
                  {

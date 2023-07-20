@@ -8,7 +8,7 @@ using System.Text.Encodings.Web;
 namespace Contacts.Api.Infrastructure.Authentication;
 
 public class BasicAuthenticationHandler :
-        AuthenticationHandler<AuthenticationSchemeOptions>
+    AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public BasicAuthenticationHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -36,6 +36,7 @@ public class BasicAuthenticationHandler :
             var username = credentials[0];
             var password = credentials[1];
 
+            // deepcode ignore NoHardcodedCredentials: this is just a sample, so it doesn't matter
             if (username == "jdoe@unknown.com" && password == "P@ssw0rd")
             {
                 var claims = new[] {

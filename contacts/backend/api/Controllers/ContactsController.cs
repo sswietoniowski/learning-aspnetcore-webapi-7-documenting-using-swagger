@@ -22,7 +22,7 @@ public class ContactsController : ControllerBase
     public ContactsController(IContactsRepository repository, IMapper mapper)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     // GET api/contacts?search=ski
@@ -100,7 +100,6 @@ public class ContactsController : ControllerBase
     [HttpPost(Name = "CreateContact")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [Consumes("application/json")]
     [RequestHeaderMatchesMediaType("Content-Type", "application/json")]
     // file deepcode ignore AntiforgeryTokenDisabled: not applicable to the API, false warning by Snyk
     public async Task<IActionResult> CreateContact([FromBody] ContactForCreationDto contactForCreationDto)
@@ -171,7 +170,6 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-    [Consumes("application/json")]
     public async Task<IActionResult> UpdateContact(int id, [FromBody] ContactForUpdateDto contactForUpdateDto)
     {
         var contact = _mapper.Map<Contact>(contactForUpdateDto);
@@ -212,7 +210,7 @@ public class ContactsController : ControllerBase
     /// <remarks>
     /// Sample request (this request updates the **email** of the contact):  
     ///
-    /// ```json
+    /// ```http
     /// PATCH /api/contacts/id
     /// [
     ///     {

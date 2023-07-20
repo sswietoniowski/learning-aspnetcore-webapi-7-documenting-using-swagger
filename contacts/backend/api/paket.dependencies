@@ -5,6 +5,8 @@ framework: net7.0, netstandard2.0, netstandard2.1
 
 nuget AutoMapper.Extensions.Microsoft.DependencyInjection
 nuget Microsoft.AspNetCore.Mvc.NewtonsoftJson
+nuget Microsoft.AspNetCore.Mvc.Versioning
+nuget Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
 nuget Microsoft.EntityFrameworkCore.SqlServer
 nuget Microsoft.EntityFrameworkCore.Sqlite
 nuget Microsoft.EntityFrameworkCore.Tools

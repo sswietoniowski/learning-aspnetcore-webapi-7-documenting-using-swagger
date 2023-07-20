@@ -21,7 +21,7 @@ public class ContactsControllerV2 : ControllerBase
     public ContactsControllerV2(IContactsRepository repository, IMapper mapper)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-        _mapper = mapper;
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
     }
 
     // GET api/contacts?search=ski

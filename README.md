@@ -802,7 +802,7 @@ To do that I've created a new DTO:
 public class ContactWithPhonesForCreationDto : ContactForCreationDto
 {
     [Required]
-    public ICollection<PhoneForCreationDto> Phones { get; set; } = new List<PhoneForCreationDto>();
+    public List<PhoneForCreationDto> Phones { get; set; } = new();
 }
 ```
 
@@ -1164,6 +1164,12 @@ and
     });
 ```
 
+Finally we can check if it works:
+
+```cmd
+curl -v -H "X-API-Version: 1.0" https://localhost:5001/api/contacts
+```
+
 ### Protecting Your API
 
 Documentation for you API should describe how to authenticate with it, if applicable.
@@ -1281,7 +1287,7 @@ So all you need is to add markdown to your comments:
     /// <remarks>
     /// Sample request (this request updates the **email** of the contact):
     ///
-    /// ```json
+    /// ```http
     /// PATCH /api/contacts/id
     /// [
     ///     {
@@ -1381,24 +1387,24 @@ Then add a new file to the `assets` folder that contains custom styles (`custom-
 }
 
 div.topbar {
-    background-color: #34a65f !important;
+  background-color: #34a65f !important;
 }
 
 h2,
 h3 {
-    color: #f5624d !important;
+  color: #f5624d !important;
 }
 
 .opblock-summary-get > button > span.opblock-summary-method {
-    background-color: #235e6f !important;
+  background-color: #235e6f !important;
 }
 
 .opblock-summary-post > button > span.opblock-summary-method {
-    background-color: #0f8a5f !important;
+  background-color: #0f8a5f !important;
 }
 
 .opblock-summary-delete > button > span.opblock-summary-method {
-    background-color: #cc231e !important;
+  background-color: #cc231e !important;
 }
 ```
 
@@ -1406,7 +1412,7 @@ We must enable static files in the `Program.cs`:
 
 ```csharp
 app.UseStaticFiles();
-````
+```
 
 And finally inject our custom styles:
 
