@@ -1456,5 +1456,3 @@ builder.Services.AddSwaggerGen(options =>
 ## Summary
 
 Now you know a little bit more about Swagger and how it can help you to document your API :-).
-
-Swagger with Bells and Whistles
