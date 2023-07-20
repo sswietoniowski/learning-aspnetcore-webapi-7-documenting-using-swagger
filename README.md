@@ -601,47 +601,152 @@ builder.Services.AddControllers(configure =>
 
 ## Generating OpenAPI Specifications for Advanced Input and Output Scenarios
 
+> "`application/json`" tells us something about the format of the representation, but nothing about the actual type.
+
+The case for vendor-specific media types.
+
 ### Supporting Vendor-specific Media Types
+
+Showed during demo.
 
 ### OpenAPI Support for Schema Variation by Media Type (Output)
 
+You can have different schemas for different media types.
+
+Supported since OpenAPI 3, but Swashbuckle doesn't support this out of the box at the moment.
+
 ### Supporting Schema Variation by Media Type (Output, ResolveConflictingActions)
+
+Showed during demo.
 
 ### Supporting Schema Variation by Media Type (Output, IOperationFilter)
 
+Showed during demo.
+
 ### OpenAPI Support for Schema Variation by Media Type (Input)
+
+Media types as children of the content tag of a request body.
 
 ### Supporting Schema Variation by Media Type (Input)
 
+Showed during demo.
+
 ### Advanced Scenarios
+
+Combine `Accept` & `Content-Type` headers to match your scenario.
 
 ## Dealing with Different Versions and Protecting the Documentation
 
 ### Working with Multiple OpenAPI Specifications
 
+Use multiple OpenAPI specifications for grouping, for example: admins versus regular users.
+
+Use that principle to group specifications by API versions.
+
 ### Versioning with ASP.NET Core’s Built-in Approach
+
+As APIs evolve, different versions start to co-exists. There are different versioning strategies:
+
+- version the URI:
+  - `api/v1/contacts`,
+  - `api/v2/contacts`,
+- version the URI via query string parameters:
+  - `api/contacts?v=1`,
+  - `api/contacts?v=2`,
+- version via custom request header:
+  - `X-Version: "v1"`
+- version via `Accept` header:
+  - `Accept: application/json;version=1`,
+  - `Accept: application/json;version=2`,
+- version the media types:
+  - `Accept: application/vnd.contacts.v1+json`,
+  - `Accept: application/vnd.contacts.v2+json`.
 
 ### Versioning Your API
 
+Showed during demo.
+
 ### Matching OpenAPI Specifications to API Versions
+
+Showed during demo.
 
 ### Protecting Your API
 
+Documentation for you API should describe how to authenticate with it, if applicable.
+
+Allow user-friendly interaction with an API that requires authentication via Swagger UI.
+
+Protecting your API:
+
+- HTTP authentication schemas (bearer, basic, ...), security scheme type: `http`,
+- API keys, security scheme type: `apiKey`,
+- OAuth 2.0, security scheme type: `oauth2`,
+- OpenID Connect, security scheme type: `openIdConnect`.
+
+Describing API authentication:
+
+- use "securitySchemes" to define all schemas the API supports,
+- use "security" to apply specific schemes to the whole API or individual operations.
+
+In our case we'll using `Basic Authentication` (username/password pair) to protect our API. This isn't the best way to protect an API, but it's easy to setup an allows us to focus on the OpenAPI specification.
+
+Principles for other forms of authentication remain the same.
+
+Showed during demo.
+
 ### Adding Authentication Support to the OpenAPI Specification
+
+Showed during demo.
 
 ## Improving Your Documentation with Advanced Customization
 
+Last part is dedicated to more advanced customization of the documentation.
+
 ### Enriching Comments with Markdown
+
+[`Markdown`](https://www.markdownguide.org/) is a lightweight markup language that you can use to add formatting elements to plaintext text documents.
+
+The OpenAPI specification supports markdown syntax.
+
+Showed during demo.
 
 ### Basic UI Customization with the Configuration API
 
+Showed during demo.
+
 ### Supporting Deep Linking
+
+Deep linking allows the user to provide a URI fragment at runtime:
+
+- `#/{tagName}`, to trigger the focus of a specific tag,
+- `#/{tagName/operationId}`, to trigger the focus of a specific operation within a tag.
+
+`#/Contacts/GetContactDetails` will expand & scroll to the `GetContactDetails` operation.
+
+Showed during demo.
 
 ### Branding the UI
 
+Inject custom CSS and JavaScript for tweaks to CSS and JavaScript.
+
+```csharp
+options.InjectStylesheet("/Assets/custom-ui.css");
+options.InjectJavascript("/Assets/custom-ui.js");
+```
+
+For full control, completely replace the index page.
+
+```csharp
+options.IndexStream = () => GetType().Assembly.GetManifestResourceStream("Contacts.API.EmbeddedAssets.index.html");
+```
+
 ### Branding the UI by Injecting Custom CSS
 
+Showed during demo.
+
 ### Branding the UI by Injecting a Custom Index Page
+
+Showed during demo.
 
 ## Summary
 
