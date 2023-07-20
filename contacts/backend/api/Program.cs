@@ -12,6 +12,7 @@ using Contacts.Api.Infrastructure.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -188,6 +189,14 @@ if (app.Environment.IsDevelopment())
             options.SwaggerEndpoint($"/swagger/ContactsAPISpecification{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
         }
         options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+
+        // customize the UI
+        options.DefaultModelsExpandDepth(2); // show nested models (default is 1)
+        options.DefaultModelRendering(ModelRendering.Model); // show the model as a JSON object
+        options.DocExpansion(DocExpansion.None); // hide the "Models" section
+        options.EnableFilter(); // enable the filter box
+        options.EnableDeepLinking(); // enable deep linking for tags and operations
+        options.DisplayOperationId(); // display operation ID's
     });
 }
 

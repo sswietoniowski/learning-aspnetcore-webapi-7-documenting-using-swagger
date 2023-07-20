@@ -1303,9 +1303,29 @@ So all you need is to add markdown to your comments:
 
 Thanks to that our Swagger UI will be looking like this:
 
-![Swagger UI with Markdown](./img/01_swagger_with_markdown.jpg)
+![Swagger UI with Markdown](./img/01_swagger_ui_with_markdown.jpg)
 
 ### Basic UI Customization with the Configuration API
+
+We can change the look & feel of Swagger UI by some customizations:
+
+```csharp
+    // to serve Swagger UI
+    app.UseSwaggerUI(options =>
+    {
+        // ...
+
+        // customize the UI
+        options.DefaultModelsExpandDepth(2); // show nested models (default is 1)
+        options.DefaultModelRendering(ModelRendering.Model); // show the model as a JSON object
+        options.DocExpansion(DocExpansion.None); // hide the "Models" section
+        options.EnableFilter(); // enable the filter box
+    });
+```
+
+And here you see the result:
+
+![Swagger UI Customization](./img/02_swagger_ui_customization.jpg)
 
 ### Supporting Deep Linking
 
@@ -1316,7 +1336,16 @@ Deep linking allows the user to provide a URI fragment at runtime:
 
 `#/Contacts/GetContactDetails` will expand & scroll to the `GetContactDetails` operation.
 
-Showed during demo.
+To enable deep linking we must add one more option:
+
+```csharp
+options.EnableDeepLinking(); // enable deep linking for tags and operations
+options.DisplayOperationId(); // display operation ID's
+```
+
+And then we can use it like so:
+
+![Swagger UI and deep linking](img/03_swagger_ui_and_deep_linking.jpg.png)
 
 ### Branding the UI
 
