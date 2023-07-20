@@ -50,6 +50,7 @@ Content-Type: application/vnd.company.contactwithphonesforcreation+json
     ]
 }
 
-### Get contacts by using API version 2.0
+### Get contacts by using API version 2.0 and authorization header (Basic authentication)
 GET {{baseUri}}/contacts HTTP/1.1
 X-API-Version: 2.0
+Authorization: Basic amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==

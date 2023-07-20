@@ -1061,7 +1061,7 @@ Then you need to add a new attribute to your controller:
 
 ```csharp
     [ApiController]
-    [Route("api/v{version:apiVersion}/contacts")]
+    [Route("api/contacts")]
     [ApiVersion("1.0")]
     public class ContactsController : ControllerBase
     // ...
@@ -1082,7 +1082,7 @@ Then we need to add a new service to `Program.cs`:
 ```csharp
 builder.Services.AddVersionedApiExplorer(options =>
 {
-    options.GroupNameFormat = "'v'VVV";
+    options.GroupNameFormat = "'v'VV";
     options.SubstituteApiVersionInUrl = true;
 });
 ```
@@ -1093,7 +1093,7 @@ Next we need to change the way how we generate our documentation:
 // add ApiExplorer with versioning
 builder.Services.AddVersionedApiExplorer(options =>
 {
-    options.GroupNameFormat = "'v'VVV";
+    options.GroupNameFormat = "'v'VV";
     options.SubstituteApiVersionInUrl = true;
 });
 
@@ -1216,13 +1216,13 @@ builder.Services.AddControllers(configure =>
 
 To login add `Authorization` header to your request:
 
-```json
-Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
+```http
+Authorization: Basic amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==
 ```
 
-Where `dXNlcm5hbWU6cGFzc3dvcmQ=` is a base64 encoded `username:password` pair.
+Where `amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==` is a base64 encoded `username:password` pair.
 
-In our case username is `jdoe@unkonw.com` and password is `P@ssw0rd` (yes - I know it isn't a good password :-)).
+In our case username is `jdoe@unknown.com` and password is `P@ssw0rd` (yes - I know it isn't a good password :-)).
 
 All is good, but Swagger UI doesn't work anymore. We need to fix that.
 
