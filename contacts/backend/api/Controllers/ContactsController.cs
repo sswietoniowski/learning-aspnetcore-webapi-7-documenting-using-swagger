@@ -210,16 +210,18 @@ public class ContactsController : ControllerBase
     /// <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
     /// <returns>An IActionResult</returns>
     /// <remarks>
-    /// Sample request (this request updates the email of the contact):
-    /// 
-    /// PATCH /api/contacts/id \
-    /// [ \
-    ///     { \
-    ///         "op": "replace", \
-    ///         "path": "/email", \
-    ///         "value": "newemail@newemail" \
-    ///     } \
+    /// Sample request (this request updates the **email** of the contact):  
+    ///
+    /// ```json
+    /// PATCH /api/contacts/id
+    /// [
+    ///     {
+    ///         "op": "replace",
+    ///         "path": "/email",
+    ///         "value": "newemail@newemail"
+    ///     }
     /// ]
+    /// ```
     /// </remarks>
     // PATCH api/contacts/1
     [HttpPatch("{id:int}")]

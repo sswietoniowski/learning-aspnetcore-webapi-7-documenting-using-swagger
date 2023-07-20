@@ -39,24 +39,26 @@
             <response code="422">Validation error</response>
         </member>
         <member name="M:Contacts.Api.Controllers.ContactsController.PartiallyUpdateContact(System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{Contacts.Api.DTOs.ContactForUpdateDto})">
-            <summary>
-            Update a contact partially
-            </summary>
-            <param name="id">The id of the contact you want to update</param>
-            <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
-            <returns>An IActionResult</returns>
-            <remarks>
-            Sample request (this request updates the email of the contact):
+             <summary>
+             Update a contact partially
+             </summary>
+             <param name="id">The id of the contact you want to update</param>
+             <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
+             <returns>An IActionResult</returns>
+             <remarks>
+             Sample request (this request updates the **email** of the contact):  
             
-            PATCH /api/contacts/id \
-            [ \
-                { \
-                    "op": "replace", \
-                    "path": "/email", \
-                    "value": "newemail@newemail" \
-                } \
-            ]
-            </remarks>
+             ```json
+             PATCH /api/contacts/id
+             [
+                 {
+                     "op": "replace",
+                     "path": "/email",
+                     "value": "newemail@newemail"
+                 }
+             ]
+             ```
+             </remarks>
         </member>
         <member name="T:Contacts.Api.DTOs.ContactDetailsDto">
             <summary>

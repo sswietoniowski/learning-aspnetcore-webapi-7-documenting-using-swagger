@@ -1269,11 +1269,43 @@ Last part is dedicated to more advanced customization of the documentation.
 
 The OpenAPI specification supports markdown syntax.
 
-Showed during demo.
+So all you need is to add markdown to your comments:
+
+````csharp
+    /// <summary>
+    /// Update a contact partially
+    /// </summary>
+    /// <param name="id">The id of the contact you want to update</param>
+    /// <param name="patchDocument">JsonPatch document specifying how to update the contact</param>
+    /// <returns>An IActionResult</returns>
+    /// <remarks>
+    /// Sample request (this request updates the **email** of the contact):
+    ///
+    /// ```json
+    /// PATCH /api/contacts/id
+    /// [
+    ///     {
+    ///         "op": "replace",
+    ///         "path": "/email",
+    ///         "value": "newemail@newemail"
+    ///     }
+    /// ]
+    /// ```
+    /// </remarks>
+    // PATCH api/contacts/1
+    [HttpPatch("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+    [Consumes("application/json-patch+json")]
+    public async Task<IActionResult> PartiallyUpdateContact(int id, [FromBody] JsonPatchDocument<ContactForUpdateDto> patchDocument)
+````
+
+Thanks to that our Swagger UI will be looking like this:
+
+![Swagger UI with Markdown](./img/01_swagger_with_markdown.jpg)
 
 ### Basic UI Customization with the Configuration API
-
-Showed during demo.
 
 ### Supporting Deep Linking
 
