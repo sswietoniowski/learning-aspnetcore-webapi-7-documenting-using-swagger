@@ -1023,7 +1023,7 @@ As APIs evolve, different versions start to co-exists. There are different versi
   - `api/contacts?v=1`,
   - `api/contacts?v=2`,
 - version via custom request header:
-  - `X-Version: "v1"`
+  - `X-API-Version: "v1"`
 - version via `Accept` header:
   - `Accept: application/json;version=1`,
   - `Accept: application/json;version=2`,
@@ -1039,9 +1039,130 @@ Even Roy Fielding (the creator of REST) [said](https://www.infoq.com/articles/ro
 
 ### Versioning Your API
 
-Showed during demo.
+First you need to add a new package to your project:
+
+```cmd
+dotnet add package Microsoft.AspNetCore.Mvc.Versioning
+```
+
+Then you need to add a new service to `Program.cs` (we're using header versioning):
+
+```csharp
+builder.Services.AddApiVersioning(options =>
+{
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(1, 0);
+    options.ReportApiVersions = true;
+    options.ApiVersionReader = new HeaderApiVersionReader("X-API-Version");
+});
+```
+
+Then you need to add a new attribute to your controller:
+
+```csharp
+    [ApiController]
+    [Route("api/v{version:apiVersion}/contacts")]
+    [ApiVersion("1.0")]
+    public class ContactsController : ControllerBase
+    // ...
+```
 
 ### Matching OpenAPI Specifications to API Versions
+
+Previous step caused Swagger UI to stop working. We need to fix that.
+
+First we need to add `ApiExplorer` that is version aware, to do that we need to add a new package to our project:
+
+```cmd
+dotnet add package Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
+```
+
+Then we need to add a new service to `Program.cs`:
+
+```csharp
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+```
+
+Next we need to change the way how we generate our documentation:
+
+```csharp
+// add ApiExplorer with versioning
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";
+    options.SubstituteApiVersionInUrl = true;
+});
+
+// retrieve ApiVersionDescriptionProvider from DI
+#pragma warning disable ASP0000
+var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
+#pragma warning restore ASP0000
+
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        options.SwaggerDoc($"ContactsAPISpecification{description.GroupName}", new()
+        {
+            Title = "Contacts API",
+            Version = description.ApiVersion.ToString(),
+            // Description of the API
+            Description = "Contacts API for managing contacts",
+            // Contact information for the API
+            Contact = new()
+            {
+                Name = "John Doe",
+                Email = "jdoe@getnada.com",
+                Url = new("https://www.twitter.com/jdoe")
+            },
+            // License information for the API
+            License = new()
+            {
+                Name = "MIT",
+                Url = new("https://opensource.org/licenses/MIT")
+            },
+            // Terms of Service
+            // TermsOfService = ...
+        });
+    }
+
+    options.DocInclusionPredicate((documentName, apiDescription) =>
+        {
+            if (!apiDescription.TryGetMethodInfo(out MethodInfo methodInfo))
+            {
+                return false;
+            }
+
+            var versions = methodInfo.DeclaringType!
+                .GetCustomAttributes(true)
+                .OfType<ApiVersionAttribute>()
+                .SelectMany(attr => attr.Versions);
+
+            return versions.Any(v => $"ContactsAPISpecificationv{v.ToString()}" == documentName);
+        }
+    );
+
+    // ...
+```
+
+and
+
+```csharp
+    // to serve Swagger UI
+    app.UseSwaggerUI(options =>
+    {
+        foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+        {
+            options.SwaggerEndpoint($"/swagger/ContactsAPISpecification{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+        }
+        options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+    });
+```
 
 ### Protecting Your API
 
