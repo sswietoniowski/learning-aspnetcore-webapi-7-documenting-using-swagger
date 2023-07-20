@@ -1352,8 +1352,8 @@ And then we can use it like so:
 Inject custom CSS and JavaScript for tweaks to CSS and JavaScript.
 
 ```csharp
-options.InjectStylesheet("/Assets/custom-ui.css");
-options.InjectJavascript("/Assets/custom-ui.js");
+options.InjectStylesheet("/assets/custom-ui.css");
+options.InjectJavascript("/assets/custom-js.js");
 ```
 
 For full control, completely replace the index page.
@@ -1364,7 +1364,67 @@ options.IndexStream = () => GetType().Assembly.GetManifestResourceStream("Contac
 
 ### Branding the UI by Injecting Custom CSS
 
-Showed during demo.
+First add a new folder to the project root:
+
+```cmd
+mkdir wwwroot
+cd wwwroot
+mkdir assets
+```
+
+Then add a new file to the `assets` folder that contains custom styles (`custom-ui.css`):
+
+````css
+#swagger-ui {
+  max-width: 800px;
+  margin: auto;
+}
+
+div.topbar {
+    background-color: #34a65f !important;
+}
+
+h2,
+h3 {
+    color: #f5624d !important;
+}
+
+.opblock-summary-get > button > span.opblock-summary-method {
+    background-color: #235e6f !important;
+}
+
+.opblock-summary-post > button > span.opblock-summary-method {
+    background-color: #0f8a5f !important;
+}
+
+.opblock-summary-delete > button > span.opblock-summary-method {
+    background-color: #cc231e !important;
+}```
+
+We must enable static files in the `Program.cs`:
+
+```csharp
+app.UseStaticFiles();
+````
+
+And finally inject our custom styles:
+
+```csharp
+    // to serve Swagger UI
+    app.UseSwaggerUI(options =>
+    {
+        // ...
+
+        // customize the UI
+        options.InjectStylesheet("/assets/custom-ui.css");
+    });
+```
+
+And here is the resulting Swagger UI:
+
+![Swagger UI with custom CSS](./img/04_swagger_ui_with_custom_css.jpg)
+
+More on that [here](https://www.code4it.dev/blog/customize-swagger-ui-with-css/).
 
 ### Branding the UI by Injecting a Custom Index Page
 

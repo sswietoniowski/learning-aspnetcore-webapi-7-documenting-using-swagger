@@ -176,6 +176,8 @@ builder.Services.AddAuthentication("Basic")
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     // to generate Swagger JSON at runtime
@@ -197,6 +199,9 @@ if (app.Environment.IsDevelopment())
         options.EnableFilter(); // enable the filter box
         options.EnableDeepLinking(); // enable deep linking for tags and operations
         options.DisplayOperationId(); // display operation ID's
+
+        // inject custom CSS
+        options.InjectStylesheet("/assets/custom-ui.css");
     });
 }
 
