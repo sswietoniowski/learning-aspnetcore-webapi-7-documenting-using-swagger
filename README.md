@@ -607,9 +607,89 @@ The case for vendor-specific media types.
 
 ### Supporting Vendor-specific Media Types
 
-Showed during demo.
+Let's assume that we want to return a different response if we want a single contact and are using our custom media type.
+
+First add an action (showed together with the one that already existed), watch out that I added `[Produces(...)]`
+to each action (in first case I did so at the controller level):
+
+```csharp
+    /// <summary>
+    /// Get a contact details by their id
+    /// </summary>
+    /// <param name="id">The if of the contact you want to get</param>
+    /// <returns>An ActionResult of type ContactDetailsDto</returns>
+    /// <response code="200">Returns the requested contact</response>
+    // GET api/contacts/1
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    {
+        var contact = await _repository.GetContactAsync(id);
+
+        if (contact is null)
+        {
+            return NotFound();
+        }
+
+        var contactDto = _mapper.Map<ContactDetailsDto>(contact);
+
+        return Ok(contactDto);
+    }
+
+    /// <summary>
+    /// Get a contact details by their id
+    /// </summary>
+    /// <param name="id">The if of the contact you want to get</param>
+    /// <returns>An ActionResult of type ContactDetailsDto</returns>
+    /// <response code="200">Returns the requested contact</response>
+    // GET api/contacts/1
+    [HttpGet("{id:int}")]
+    [Produces("application/vnd.company.contact+json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<ContactDto>> GetContact(int id)
+    {
+        var contact = await _repository.GetContactAsync(id);
+
+        if (contact is null)
+        {
+            return NotFound();
+        }
+
+        var contactDto = _mapper.Map<ContactDto>(contact);
+
+        return Ok(contactDto);
+    }
+```
+
+Sadly that won't work as it is, we must add a media constraint, to do that we will be using our custom attribute `[RequestHeaderMatchesMediaTypeAttribute]`.
+
+Example:
+
+```csharp
+    [HttpGet("{id:int}")]
+    // ...
+    [RequestHeaderMatchesMediaType("Accept", "application/json", "application/xml")]
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    {
+        // ...
+    }
+
+    [HttpGet("{id:int}")]
+    // ...
+    [RequestHeaderMatchesMediaType("Accept", "application/vnd.company.contact+json")]
+    public async Task<ActionResult<ContactDto>> GetContact(int id)
+    {
+        // ...
+    }
+```
+
+That would work, at least for the call when we specify `Accept` header. At the same time Swagger UI won't start and any request without `Accept` header will return `404 Not Found`.
 
 ### OpenAPI Support for Schema Variation by Media Type (Output)
+
+As you saw in the previous step, after adding our custom media type Swagger UI stopped working. We need to fix that.
 
 You can have different schemas for different media types.
 
@@ -617,11 +697,94 @@ Supported since OpenAPI 3, but Swashbuckle doesn't support this out of the box a
 
 ### Supporting Schema Variation by Media Type (Output, ResolveConflictingActions)
 
-Showed during demo.
+To solve the Swagger UI (in fact Shwashbuckle) problem we need to first resolve the conflict between our actions, to
+do that edit `Program.cs` like so:
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+
+    options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+});
+```
+
+That will solve the problem with Swagger UI, but we still need to add the support for different schemas for different media types.
+
+We can improve our code:
+
+```csharp
+    options.ResolveConflictingActions(apiDescriptions =>
+    {
+        var firstDescription = apiDescriptions.First();
+        var secondDescription = apiDescriptions.ElementAt(1);
+
+        firstDescription.SupportedResponseTypes
+            .AddRange(
+                secondDescription.SupportedResponseTypes
+                    .Where(a => a.StatusCode == StatusCodes.Status200OK));
+
+        return firstDescription;
+    });
+```
+
+Sadly that won't work either due to Shwashbuckle limitations.
 
 ### Supporting Schema Variation by Media Type (Output, IOperationFilter)
 
-Showed during demo.
+To solve the problem we need to implement a class that implements `IOperationFilter` interface, example:
+
+```csharp
+public class GetContactOperationFilter : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (operation.OperationId != "GetContact")
+        {
+            return;
+        }
+
+        if (operation.Responses.Any(response => response.Key == StatusCodes.Status200OK.ToString()))
+        {
+            operation.Responses[StatusCodes.Status200OK.ToString()].Content
+                .Add(
+                    "application/vnd.company.contact+json",
+                    new OpenApiMediaType
+                    {
+                        Schema = context.SchemaGenerator.GenerateSchema(typeof(ContactDto), context.SchemaRepository)
+                    });
+        }
+    }
+}
+```
+
+We would also need to add a name to our actions, that way we will be able to reference them in our filter.
+
+```csharp
+    [HttpGet("{id:int}", Name = "GetContact")]
+    // ...
+    public async Task<ActionResult<ContactDto>> GetContact(int id)
+```
+
+We also need to register our filter in `Program.cs`:
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+
+    options.OperationFilter<GetContactOperationFilter>();
+});
+```
+
+It works but we can do better. In fact our solution for resolving the conflict between actions is not really good.
+
+We should remove the `ResolveConflictingActions` call from `Program.cs` and add attribute to exclude the action from Swagger UI:
+
+```csharp
+    [ApiExplorerSettings(IgnoreApi = true)] // this will hide the action from the Swagger UI and thus resolve the conflict
+    public async Task<ActionResult<ContactDto>> GetContact(int id)
+```
 
 ### OpenAPI Support for Schema Variation by Media Type (Input)
 
@@ -629,7 +792,130 @@ Media types as children of the content tag of a request body.
 
 ### Supporting Schema Variation by Media Type (Input)
 
-Showed during demo.
+Let's suppose that you wan't to be able not only create a new contact, but at the same time add phones to it.
+
+We want to keep what we already have, but also add a new action that will allow us to add phones to a contact.
+
+To do that I've created a new DTO:
+
+```csharp
+public class ContactWithPhonesForCreationDto : ContactForCreationDto
+{
+    [Required]
+    public ICollection<PhoneForCreationDto> Phones { get; set; } = new List<PhoneForCreationDto>();
+}
+```
+
+and
+
+```csharp
+public class PhoneForCreationDto
+{
+    [Required]
+    [MaxLength(16)]
+    public string Number { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+}
+```
+
+I had to configure AutoMapper as well:
+
+```csharp
+    CreateMap<ContactWithPhonesForCreationDto, Contact>();
+    CreateMap<PhoneForCreationDto, Phone>();
+```
+
+Then I can add a new action like so:
+
+```csharp
+    // POST api/contacts
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateContactWithPhones([FromBody] ContactWithPhonesForCreationDto contactWithPhonesForCreationDto)
+    {
+        if (contactWithPhonesForCreationDto.FirstName == contactWithPhonesForCreationDto.LastName)
+        {
+            // just an example of how to add a custom error to the ModelState
+            ModelState.AddModelError("wrongName", "First name and last name cannot be the same.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+#pragma warning disable API1000 // added to the controller already
+            return BadRequest(ModelState);
+#pragma warning restore API1000
+        }
+
+        var contact = _mapper.Map<Contact>(contactWithPhonesForCreationDto);
+
+        await _repository.CreateContactAsync(contact);
+
+        var contactDetailsDto = _mapper.Map<ContactDetailsDto>(contact);
+
+        return CreatedAtAction(nameof(GetContactDetails), new { id = contact.Id }, contactDetailsDto);
+    }
+```
+
+Again we need to add a media constraint, to do that we will be using our custom attribute `[RequestHeaderMatchesMediaTypeAttribute]`.
+
+```csharp
+    [Consumes("application/vnd.company.contactwithphonesforcreation+json")]
+    [RequestHeaderMatchesMediaType("Content-Type", "application/vnd.company.contactwithphonesforcreation+json")]
+    public async Task<IActionResult> CreateContactWithPhones([FromBody] ContactWithPhonesForCreationDto contactWithPhonesForCreationDto)
+```
+
+In our case to use this vendor specific input we should use a call like so:
+
+```cmd
+curl -v -X POST -H "Content-Type: application/vnd.company.contactwithphonesforcreation+json" -d "{\"firstName\":\"John\",\"lastName\":\"Doe\",\"email\":\" john@example.com \",\"phones\":[{\"number\":\"123456789\",\"description\":\"home\"}]}" https://localhost:5001/api/contacts
+```
+
+At this point our API would work, but Swagger UI won't start.
+
+Again the culprit is the conflict between our actions. We need to resolve it. Again its limitations of Shwashbuckle.
+
+To solve it we need to add a new filter:
+
+```csharp
+public class CreateContactOperationFilter : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        if (operation.OperationId != "CreateContact")
+        {
+            return;
+        }
+
+        operation.RequestBody.Content.Add(
+            "application/vnd.company.contactwithphonesforcreation+json",
+            new OpenApiMediaType
+            {
+                Schema = context.SchemaGenerator.GenerateSchema(typeof(ContactWithPhonesForCreationDto), context.SchemaRepository)
+            });
+    }
+}
+```
+
+That would require adding a name to our actions.
+
+```csharp
+    [HttpPost(Name = "CreateContact")]
+    // ...
+    public async Task<IActionResult> CreateContactWithPhones([FromBody] ContactWithPhonesForCreationDto contactWithPhonesForCreationDto)
+```
+
+And of course we must ignore one of our actions in Swagger UI:
+
+```csharp
+    [ApiExplorerSettings(IgnoreApi = true)] // this will hide the action from the Swagger UI and thus resolve the conflict
+    public async Task<IActionResult> CreateContactWithPhones([FromBody] ContactWithPhonesForCreationDto contactWithPhonesForCreationDto)
+```
+
+Surely we need to register our filter in `Program.cs`:
+
+```csharp
+    options.OperationFilter<CreateContactOperationFilter>();
+```
 
 ### Advanced Scenarios
 
@@ -659,8 +945,8 @@ As APIs evolve, different versions start to co-exists. There are different versi
   - `Accept: application/json;version=1`,
   - `Accept: application/json;version=2`,
 - version the media types:
-  - `Accept: application/vnd.contacts.v1+json`,
-  - `Accept: application/vnd.contacts.v2+json`.
+  - `Accept: application/vnd.company.contact.v1+json`,
+  - `Accept: application/vnd.company.contact.v2+json`.
 
 While there are many different strategies, you should ask yourself: _"Do I really need to version my API?"_.
 

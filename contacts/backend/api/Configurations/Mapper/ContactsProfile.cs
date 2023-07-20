@@ -12,6 +12,8 @@ public class ContactsProfile : Profile
         CreateMap<Contact, ContactDetailsDto>();
         CreateMap<Phone, PhoneDto>();
         CreateMap<ContactForCreationDto, Contact>();
+        CreateMap<ContactWithPhonesForCreationDto, Contact>();
+        CreateMap<PhoneForCreationDto, Phone>();
         CreateMap<ContactForUpdateDto, Contact>().ReverseMap();
     }
 }

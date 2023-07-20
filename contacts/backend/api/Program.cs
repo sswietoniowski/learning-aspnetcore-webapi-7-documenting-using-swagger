@@ -1,3 +1,4 @@
+using Contacts.Api.Configurations.Filters;
 using Contacts.Api.Infrastructure;
 using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -87,6 +88,11 @@ builder.Services.AddSwaggerGen(options =>
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
     // add XML comments to the Swagger doc
     options.IncludeXmlComments(xmlCommentsFullPath);
+
+    //options.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
+
+    options.OperationFilter<GetContactOperationFilter>();
+    options.OperationFilter<CreateContactOperationFilter>();
 });
 
 var app = builder.Build();
