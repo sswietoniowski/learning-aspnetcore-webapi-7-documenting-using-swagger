@@ -3,6 +3,7 @@ using Contacts.Api.Configurations.Attributes;
 using Contacts.Api.Domain;
 using Contacts.Api.DTOs;
 using Contacts.Api.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,6 +15,7 @@ namespace Contacts.Api.Controllers;
 [Consumes("application/json")]
 [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
 [ApiVersion("2.0")]
+[Authorize]
 public class ContactsControllerV2 : ControllerBase
 {
     private readonly IContactsRepository _repository;

@@ -1186,11 +1186,78 @@ In our case we'll using `Basic Authentication` (username/password pair) to prote
 
 Principles for other forms of authentication remain the same.
 
-Showed during demo.
+To simulate authentication I've added `BasicAuthentication` class.
+
+I had to configure authentication in `Program.cs`:
+
+```csharp
+// add basic authentication
+builder.Services.AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
+```
+
+and
+
+```csharp
+app.UseAuthentication();
+```
+
+To force our controllers to use this authentication we can add a filter:
+
+```csharp
+builder.Services.AddControllers(configure =>
+{
+    // ...
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
+    // ...
+    configure.Filters.Add(new AuthorizeFilter());
+})
+```
+
+To login add `Authorization` header to your request:
+
+```json
+Authorization: Basic dXNlcm5hbWU6cGFzc3dvcmQ=
+```
+
+Where `dXNlcm5hbWU6cGFzc3dvcmQ=` is a base64 encoded `username:password` pair.
+
+In our case username is `jdoe@unkonw.com` and password is `P@ssw0rd` (yes - I know it isn't a good password :-)).
+
+All is good, but Swagger UI doesn't work anymore. We need to fix that.
 
 ### Adding Authentication Support to the OpenAPI Specification
 
-Showed during demo.
+To add support for authentication to Swagger UI we need to configure it in `Program.cs`:
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("basicAuth",
+        new OpenApiSecurityScheme()
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "basic",
+            Description = "Input your username and password to access this API"
+        });
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "basicAuth"
+                    }
+                }, new List<string>()
+            }
+        });
+
+// ...
+```
 
 ## Improving Your Documentation with Advanced Customization
 

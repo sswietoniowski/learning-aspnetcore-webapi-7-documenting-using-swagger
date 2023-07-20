@@ -9,7 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
+using Contacts.Api.Infrastructure.Authentication;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Abstractions;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +42,9 @@ builder.Services.AddControllers(configure =>
 {
     configure.ReturnHttpNotAcceptable = true;
     configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status400BadRequest));
+    configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
     configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
+    //configure.Filters.Add(new AuthorizeFilter()); // I've added requirement to authorize all actions only to "ContactsControllerV2"
 }).AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
@@ -86,6 +92,29 @@ var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetR
 // register Swagger generator
 builder.Services.AddSwaggerGen(options =>
 {
+    options.AddSecurityDefinition("basicAuth",
+        new OpenApiSecurityScheme()
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "basic",
+            Description = "Input your username and password to access this API"
+        });
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "basicAuth"
+                    }
+                }, new List<string>()
+            }
+        });
+
     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {
         options.SwaggerDoc($"ContactsAPISpecification{description.GroupName}", new()
@@ -142,6 +171,10 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<CreateContactOperationFilter>();
 });
 
+// add basic authentication
+builder.Services.AddAuthentication("Basic")
+    .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -162,6 +195,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors();
