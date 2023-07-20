@@ -1010,6 +1010,8 @@ Then we need to add `[ApiExplorerAttribute(GroupName = "...")]` to our controlle
     // ...
 ```
 
+I had to replace this configuration in the final version of my code, but if you like you can see it [here](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-documenting-using-swagger/tree/00d0f3af34ad85d719d877ac56eae749b6f8d137).
+
 ### Versioning with ASP.NET Core’s Built-in Approach
 
 As APIs evolve, different versions start to co-exists. There are different versioning strategies:
