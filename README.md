@@ -1374,7 +1374,7 @@ mkdir assets
 
 Then add a new file to the `assets` folder that contains custom styles (`custom-ui.css`):
 
-````css
+```css
 #swagger-ui {
   max-width: 800px;
   margin: auto;
@@ -1399,7 +1399,8 @@ h3 {
 
 .opblock-summary-delete > button > span.opblock-summary-method {
     background-color: #cc231e !important;
-}```
+}
+```
 
 We must enable static files in the `Program.cs`:
 
@@ -1449,3 +1450,5 @@ builder.Services.AddSwaggerGen(options =>
 ## Summary
 
 Now you know a little bit more about Swagger and how it can help you to document your API :-).
+
+Swagger with Bells and Whistles
