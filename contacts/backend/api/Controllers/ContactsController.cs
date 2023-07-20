@@ -13,6 +13,7 @@ namespace Contacts.Api.Controllers;
 [Produces("application/json", "application/xml")]
 [Consumes("application/json")]
 [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+[ApiExplorerSettings(GroupName = "ContactsAPISpecificationContacts")]
 public class ContactsController : ControllerBase
 {
     private readonly IContactsRepository _repository;

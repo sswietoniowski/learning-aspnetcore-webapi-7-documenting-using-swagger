@@ -60,11 +60,38 @@ builder.Services.AddEndpointsApiExplorer();
 // register Swagger generator
 builder.Services.AddSwaggerGen(options =>
 {
+    //// you'll be able to access the API documentation here:
+    //// https://localhost:5001/swagger/ContactsAPISpecification/swagger.json
+    //options.SwaggerDoc("ContactsAPISpecification", new()
+    //{
+    //    Title = "Contacts API",
+    //    Version = "1",
+    //    // Description of the API
+    //    Description = "Contacts API for managing contacts",
+    //    // Contact information for the API
+    //    Contact = new()
+    //    {
+    //        Name = "John Doe",
+    //        Email = "jdoe@getnada.com",
+    //        Url = new("https://www.twitter.com/jdoe")
+    //    },
+    //    // License information for the API
+    //    License = new()
+    //    {
+    //        Name = "MIT",
+    //        Url = new("https://opensource.org/licenses/MIT")
+    //    },
+    //    // Terms of Service
+    //    // TermsOfService = ...
+    //});
+
+    // Two different Swagger docs for the same API
+
     // you'll be able to access the API documentation here:
-    // https://localhost:5001/swagger/ContactsAPISpecification/swagger.json
-    options.SwaggerDoc("ContactsAPISpecification", new()
+    // https://localhost:5001/swagger/ContactsAPISpecificationContacts/swagger.json
+    options.SwaggerDoc("ContactsAPISpecificationContacts", new()
     {
-        Title = "Contacts API",
+        Title = "Contacts API (Contacts)",
         Version = "1",
         // Description of the API
         Description = "Contacts API for managing contacts",
@@ -84,6 +111,32 @@ builder.Services.AddSwaggerGen(options =>
         // Terms of Service
         // TermsOfService = ...
     });
+
+    // you'll be able to access the API documentation here:
+    // https://localhost:5001/swagger/ContactsAPISpecificationPhones/swagger.json
+    options.SwaggerDoc("ContactsAPISpecificationPhones", new()
+    {
+        Title = "Contacts API (Phones)",
+        Version = "1",
+        // Description of the API
+        Description = "Contacts API for managing phones",
+        // Contact information for the API
+        Contact = new()
+        {
+            Name = "John Doe",
+            Email = "jdoe@getnada.com",
+            Url = new("https://www.twitter.com/jdoe")
+        },
+        // License information for the API
+        License = new()
+        {
+            Name = "MIT",
+            Url = new("https://opensource.org/licenses/MIT")
+        },
+        // Terms of Service
+        // TermsOfService = ...
+    });
+
     var xmlCommentsFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlCommentsFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentsFile);
     // add XML comments to the Swagger doc
@@ -101,10 +154,20 @@ if (app.Environment.IsDevelopment())
 {
     // to generate Swagger JSON at runtime
     app.UseSwagger();
-    // to serve Swagger UI at https://localhost:5001/swagger
+
+    //// to serve Swagger UI at https://localhost:5001/swagger
+    //app.UseSwaggerUI(options =>
+    //{
+    //    options.SwaggerEndpoint("/swagger/ContactsAPISpecification/swagger.json", "Contacts API");
+    //    options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+    //});
+
+    // Two different Swagger UIs for the same API
+    
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/swagger/ContactsAPISpecification/swagger.json", "Contacts API");
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecificationContacts/swagger.json", "Contacts API (Contacts)");
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecificationPhones/swagger.json", "Contacts API (Phones)");
         options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
     });
 }

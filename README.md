@@ -962,7 +962,84 @@ Showed during demo.
 
 ### Matching OpenAPI Specifications to API Versions
 
-Showed during demo.
+First we need to add info about different specifications to `Program.cs`:
+
+```csharp
+    // Two different Swagger docs for the same API
+
+    // you'll be able to access the API documentation here:
+    // https://localhost:5001/swagger/ContactsAPISpecificationContacts/swagger.json
+    options.SwaggerDoc("ContactsAPISpecificationContacts", new()
+    {
+        Title = "Contacts API (Contacts)",
+        Version = "1",
+        // Description of the API
+        Description = "Contacts API for managing contacts",
+        // Contact information for the API
+        Contact = new()
+        {
+            Name = "John Doe",
+            Email = "jdoe@getnada.com",
+            Url = new("https://www.twitter.com/jdoe")
+        },
+        // License information for the API
+        License = new()
+        {
+            Name = "MIT",
+            Url = new("https://opensource.org/licenses/MIT")
+        },
+        // Terms of Service
+        // TermsOfService = ...
+    });
+
+    // you'll be able to access the API documentation here:
+    // https://localhost:5001/swagger/ContactsAPISpecificationPhones/swagger.json
+    options.SwaggerDoc("ContactsAPISpecificationPhones", new()
+    {
+        Title = "Contacts API (Phones)",
+        Version = "1",
+        // Description of the API
+        Description = "Contacts API for managing phones",
+        // Contact information for the API
+        Contact = new()
+        {
+            Name = "John Doe",
+            Email = "jdoe@getnada.com",
+            Url = new("https://www.twitter.com/jdoe")
+        },
+        // License information for the API
+        License = new()
+        {
+            Name = "MIT",
+            Url = new("https://opensource.org/licenses/MIT")
+        },
+        // Terms of Service
+        // TermsOfService = ...
+    });
+```
+
+and
+
+```csharp
+    // Two different Swagger UIs for the same API
+
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecificationContacts/swagger.json", "Contacts API (Contacts)");
+        options.SwaggerEndpoint("/swagger/ContactsAPISpecificationPhones/swagger.json", "Contacts API (Phones)");
+        options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
+    });
+```
+
+Then we need to add `[ApiExplorerAttribute(GroupName = "...")]` to our controller, like so:
+
+```csharp
+    [ApiController]
+    // ...
+    [ApiExplorerSettings(GroupName = "ContactsAPISpecificationContacts")]
+    public class ContactsController : ControllerBase
+    // ...
+```
 
 ### Protecting Your API
 

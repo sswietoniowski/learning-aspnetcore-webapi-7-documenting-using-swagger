@@ -11,6 +11,7 @@ namespace Contacts.Api.Controllers;
 
 [ApiController]
 [Route("api/contacts/{contactId:int}/phones")]
+[ApiExplorerSettings(GroupName = "ContactsAPISpecificationPhones")]
 public class PhonesController : ControllerBase
 {
     private readonly ContactsDbContext _dbContext;
