@@ -1,10 +1,7 @@
 ﻿using AutoMapper;
-using Contacts.Api.Configurations.Attributes;
-using Contacts.Api.Domain;
 using Contacts.Api.DTOs;
 using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Contacts.Api.Controllers;
