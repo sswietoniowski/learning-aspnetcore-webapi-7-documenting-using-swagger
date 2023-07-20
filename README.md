@@ -931,37 +931,6 @@ Use multiple OpenAPI specifications for grouping, for example: admins versus reg
 
 Use that principle to group specifications by API versions.
 
-### Versioning with ASP.NET Core’s Built-in Approach
-
-As APIs evolve, different versions start to co-exists. There are different versioning strategies:
-
-- version the URI:
-  - `api/v1/contacts`,
-  - `api/v2/contacts`,
-- version the URI via query string parameters:
-  - `api/contacts?v=1`,
-  - `api/contacts?v=2`,
-- version via custom request header:
-  - `X-Version: "v1"`
-- version via `Accept` header:
-  - `Accept: application/json;version=1`,
-  - `Accept: application/json;version=2`,
-- version the media types:
-  - `Accept: application/vnd.company.contact.v1+json`,
-  - `Accept: application/vnd.company.contact.v2+json`.
-
-While there are many different strategies, you should ask yourself: _"Do I really need to version my API?"_.
-
-Maybe not :-), [here](https://www.hmeid.com/blog/just-say-no-to-versioning) you'll find some arguments against versioning.
-
-Even Roy Fielding (the creator of REST) [said](https://www.infoq.com/articles/roy-fielding-on-versioning/) that versioning is not that great.
-
-### Versioning Your API
-
-Showed during demo.
-
-### Matching OpenAPI Specifications to API Versions
-
 First we need to add info about different specifications to `Program.cs`:
 
 ```csharp
@@ -1040,6 +1009,37 @@ Then we need to add `[ApiExplorerAttribute(GroupName = "...")]` to our controlle
     public class ContactsController : ControllerBase
     // ...
 ```
+
+### Versioning with ASP.NET Core’s Built-in Approach
+
+As APIs evolve, different versions start to co-exists. There are different versioning strategies:
+
+- version the URI:
+  - `api/v1/contacts`,
+  - `api/v2/contacts`,
+- version the URI via query string parameters:
+  - `api/contacts?v=1`,
+  - `api/contacts?v=2`,
+- version via custom request header:
+  - `X-Version: "v1"`
+- version via `Accept` header:
+  - `Accept: application/json;version=1`,
+  - `Accept: application/json;version=2`,
+- version the media types:
+  - `Accept: application/vnd.company.contact.v1+json`,
+  - `Accept: application/vnd.company.contact.v2+json`.
+
+While there are many different strategies, you should ask yourself: _"Do I really need to version my API?"_.
+
+Maybe not :-), [here](https://www.hmeid.com/blog/just-say-no-to-versioning) you'll find some arguments against versioning.
+
+Even Roy Fielding (the creator of REST) [said](https://www.infoq.com/articles/roy-fielding-on-versioning/) that versioning is not that great.
+
+### Versioning Your API
+
+Showed during demo.
+
+### Matching OpenAPI Specifications to API Versions
 
 ### Protecting Your API
 
