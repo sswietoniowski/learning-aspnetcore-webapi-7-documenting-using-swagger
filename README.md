@@ -1359,7 +1359,7 @@ options.InjectJavascript("/assets/custom-js.js");
 For full control, completely replace the index page.
 
 ```csharp
-options.IndexStream = () => GetType().Assembly.GetManifestResourceStream("Contacts.API.EmbeddedAssets.index.html");
+options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
 ```
 
 ### Branding the UI by Injecting Custom CSS
@@ -1424,11 +1424,27 @@ And here is the resulting Swagger UI:
 
 ![Swagger UI with custom CSS](./img/04_swagger_ui_with_custom_css.jpg)
 
-More on that [here](https://www.code4it.dev/blog/customize-swagger-ui-with-css/).
+More on that [here](https://www.code4it.dev/blog/customize-swagger-ui-with-css/) and [here](https://blog.rashik.com.np/customize-swagger-ui-with-custom-logo-and-theme-color/).
+
+I had to replace this configuration in the final version of my code, but if you like you can see it [here](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-documenting-using-swagger/tree/35bd2a4854937c9f040d1c4a7434dc0d8cab4332).
 
 ### Branding the UI by Injecting a Custom Index Page
 
-Showed during demo.
+When you want to replace the whole index page you can do that too. Be aware that it will a lot more work than simply
+injecting custom CSS.
+
+First add a new folder to our project (in my case `EmbeddedAssets`), then add to that folder new index page (`index.html` - you must mark this file to be embedded resource) - you can copy its contents from original Swagger UI index page.
+
+Then we need to use it, by editing `Program.cs`:
+
+```csharp
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+
+    options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
+});
+```
 
 ## Summary
 

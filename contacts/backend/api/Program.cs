@@ -202,6 +202,9 @@ if (app.Environment.IsDevelopment())
 
         // inject custom CSS
         options.InjectStylesheet("/assets/custom-ui.css");
+
+        // inject custom index page
+        options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
     });
 }
 
