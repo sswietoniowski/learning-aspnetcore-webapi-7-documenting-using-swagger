@@ -6,7 +6,10 @@ Based on this course [Documenting an ASP.NET Core 6 Web API Using Swagger](https
 
 Original course materials can be found [here](https://app.pluralsight.com/library/courses/asp-dot-net-core-6-web-api-documenting-swagger/exercise-files) and [here](https://github.com/KevinDockx/DocumentingAspNetCore6API).
 
+## Table of Contents
+
 - [Learning ASP.NET Core - WebAPI (.NET 7) Documenting Using Swagger](#learning-aspnet-core---webapi-net-7-documenting-using-swagger)
+  - [Table of Contents](#table-of-contents)
   - [Setup](#setup)
   - [Getting Started with OpenAPI (Swagger)](#getting-started-with-openapi-swagger)
     - [Why Use Swagger / OpenAPI to Document Your API?](#why-use-swagger--openapi-to-document-your-api)
