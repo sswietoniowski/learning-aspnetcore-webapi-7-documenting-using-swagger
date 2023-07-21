@@ -1,0 +1,8 @@
+AutoMapper.Extensions.Microsoft.DependencyInjection
+Microsoft.AspNetCore.Mvc.NewtonsoftJson
+Microsoft.AspNetCore.Mvc.Versioning
+Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Sqlite
+Microsoft.EntityFrameworkCore.Tools
+Swashbuckle.AspNetCore
