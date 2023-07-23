@@ -40,7 +40,7 @@ public class ContactsController : ControllerBase
     /// <summary>
     /// Get a contact details by their id
     /// </summary>
-    /// <param name="id">The if of the contact you want to get</param>
+    /// <param name="id">The id of the contact you want to get</param>
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
     /// <response code="200">Returns the requested contact</response>
     // GET api/contacts/1
@@ -65,7 +65,7 @@ public class ContactsController : ControllerBase
     /// <summary>
     /// Get a contact details by their id
     /// </summary>
-    /// <param name="id">The if of the contact you want to get</param>
+    /// <param name="id">The id of the contact you want to get</param>
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
     /// <response code="200">Returns the requested contact</response>
     // GET api/contacts/1

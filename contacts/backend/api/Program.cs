@@ -217,4 +217,10 @@ app.UseCors();
 
 app.MapControllers();
 
+// recreate & migrate the database on each run, for demo purposes
+using var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope();
+var dbContext = scope.ServiceProvider.GetRequiredService<ContactsDbContext>();
+dbContext.Database.EnsureDeleted();
+dbContext.Database.Migrate();
+
 app.Run();

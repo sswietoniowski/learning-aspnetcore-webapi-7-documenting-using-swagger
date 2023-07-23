@@ -4,7 +4,7 @@ using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Contacts.Api.Controllers;
+namespace Contacts.Api.Controllers.v2;
 
 [ApiController]
 [Route("api/contacts")]
@@ -13,12 +13,12 @@ namespace Contacts.Api.Controllers;
 [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
 [ApiVersion("2.0")]
 [Authorize]
-public class ContactsControllerV2 : ControllerBase
+public class ContactsController : ControllerBase
 {
     private readonly IContactsRepository _repository;
     private readonly IMapper _mapper;
 
-    public ContactsControllerV2(IContactsRepository repository, IMapper mapper)
+    public ContactsController(IContactsRepository repository, IMapper mapper)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
