@@ -174,12 +174,18 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddAuthentication("Basic")
     .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("Basic", null);
 
+// add problem details
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
 app.UseStaticFiles();
 
 if (app.Environment.IsDevelopment())
 {
+    // no need to add it explicitly, it's added by default
+    app.UseDeveloperExceptionPage();
+
     // to generate Swagger JSON at runtime
     app.UseSwagger();
 
@@ -206,6 +212,12 @@ if (app.Environment.IsDevelopment())
         // inject custom index page
         options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
     });
+}
+else
+{
+    // should be added at the beginning of the pipeline
+    app.UseExceptionHandler();
+    app.UseStatusCodePages();
 }
 
 app.UseHttpsRedirection();
