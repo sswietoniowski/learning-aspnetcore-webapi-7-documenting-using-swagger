@@ -111,7 +111,7 @@ Term "Swagger" can be used, but "OpenAPI" is the preferred term.
 
 OpenAPI specification and Swagger specification are the same thing.
 
-`Swagger` is a set of open-source built around that OpenAPI specification.
+[`Swagger`](https://swagger.io/) is a set of open-source built around that OpenAPI specification.
 
 [`Swagger UI`](https://swagger.io/tools/swagger-ui/) [:file_folder:](https://github.com/swagger-api/swagger-ui) renders a documentation UI from the specification.
 
