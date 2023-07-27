@@ -48,6 +48,8 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequestHeaderMatchesMediaType("Accept", "application/json", "application/xml")]
+    // add caching to the response, so that the same request within 60 seconds will be served from the cache
+    [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
         var contact = await _repository.GetContactAsync(id);

@@ -54,3 +54,10 @@ Content-Type: application/vnd.company.contactwithphonesforcreation+json
 GET {{baseUri}}/contacts HTTP/1.1
 X-API-Version: 2.0
 Authorization: Basic amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==
+
+### Get contact by id, check if caching is working 
+
+# By default caching would work in the browser (Swagger), but not int the REST Client
+GET {{baseUri}}/contacts/{{id}} HTTP/1.1
+Accept: application/json
+

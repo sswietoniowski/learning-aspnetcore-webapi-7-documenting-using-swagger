@@ -13,7 +13,7 @@
     <EmbeddedResource Include="EmbeddedAssets\index.html" />
   </ItemGroup>
   <!-- Comment out next section if you want to use Paket to manage dependencies -->
-  <ItemGroup>
+  <!--<ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
@@ -25,7 +25,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+  </ItemGroup>-->
   <ItemGroup>
     <Folder Include="Infrastructure\Migrations\" />
   </ItemGroup>
@@ -42,5 +42,5 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <!-- Uncomment next section if you want to use Paket to manage dependencies -->
-  <!-- <Import Project=".paket\Paket.Restore.targets" /> -->
+  <Import Project=".paket\Paket.Restore.targets" /> 
 </Project>
