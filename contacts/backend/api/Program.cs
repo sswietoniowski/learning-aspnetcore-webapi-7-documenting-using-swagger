@@ -37,7 +37,11 @@ builder.Services.AddScoped<IContactsRepository, ContactsRepository>();
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 // register CORS options
-builder.Services.Configure<CorsConfiguration>(builder.Configuration.GetSection("Cors"));
+// v1
+//builder.Services.Configure<CorsConfiguration>(builder.Configuration.GetSection("Cors"));
+// v2 - with validation
+builder.Services.AddOptions<CorsConfiguration>().Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName))
+    .ValidateDataAnnotations();
 
 builder.Services.AddCors(options =>
 {
@@ -47,6 +51,7 @@ builder.Services.AddCors(options =>
 
         // v1
         // var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+
         // v2
         var origins = new List<string>();
         builder.Configuration.Bind("Cors:Origins", origins);
