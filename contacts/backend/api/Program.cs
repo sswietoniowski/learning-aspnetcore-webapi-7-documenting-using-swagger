@@ -13,6 +13,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
 using Contacts.Api.Configurations.Options;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Events;
@@ -44,11 +45,13 @@ builder.Services.AddCors(options =>
     {
         // read origins from configuration
 
+        // v1
         // var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+        // v2
         var origins = new List<string>();
         builder.Configuration.Bind("Cors:Origins", origins);
 
-        if (origins is not null)
+        if (origins.Any())
         {
             policyBuilder
                 .WithOrigins(origins.ToArray())

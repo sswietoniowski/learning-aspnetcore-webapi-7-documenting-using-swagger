@@ -52,6 +52,7 @@ public class ContactsController : ControllerBase
         // using the Options pattern
         var origins = _corsConfiguration.Origins;
 
+        // this test is sort of useless, but it's just to show how to use the configuration
         if (origins.Contains(Request.Headers["Origin"].ToString()))
         {
             _logger.LogInformation("Request is coming from an allowed origin");
