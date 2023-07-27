@@ -61,8 +61,8 @@ Authorization: Basic amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==
 GET {{baseUri}}/contacts/{{id}} HTTP/1.1
 Accept: application/json
 
-### Get contact by id, ignore caching
+### Get contact by id, ignore caching (client can bypass caching)
 
 GET {{baseUri}}/contacts/{{id}} HTTP/1.1
 Accept: application/json
-Cache-Control: no-cache, no-store
+Cache-Control: max-age=0, no-cache

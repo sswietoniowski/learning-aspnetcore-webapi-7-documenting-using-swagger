@@ -187,6 +187,14 @@ builder.Services.AddAuthentication("Basic")
 // add problem details
 builder.Services.AddProblemDetails();
 
+// add response caching
+builder.Services.AddResponseCaching(options =>
+{
+    options.MaximumBodySize = 32 * 1024 * 1024; // 32MB - specifies the maximum cacheable size for the response body in bytes (default: 64MB)
+    options.SizeLimit = 256 * 1024 * 1024; // 256MB - represents the size limit for the response cache middleware in bytes (default: 100MB)
+    //options.UseCaseSensitivePaths = true; // if set to true, caches the responses by using case-sensitive paths (default: false)
+});
+
 var app = builder.Build();
 
 app.UseStaticFiles();
@@ -236,6 +244,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors();
+
+// use response caching
+app.UseResponseCaching();
 
 app.MapControllers();
 
