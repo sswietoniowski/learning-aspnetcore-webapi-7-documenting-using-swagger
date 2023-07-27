@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
+using Contacts.Api.Configurations.Options;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Events;
@@ -33,6 +34,9 @@ builder.Services.AddDbContext<ContactsDbContext>(options =>
 builder.Services.AddScoped<IContactsRepository, ContactsRepository>();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+// register CORS options
+builder.Services.Configure<CorsConfiguration>(builder.Configuration.GetSection("Cors"));
 
 builder.Services.AddCors(options =>
 {

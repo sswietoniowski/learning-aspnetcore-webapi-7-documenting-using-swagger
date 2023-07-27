@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
 using Contacts.Api.Configurations.Attributes;
+using Contacts.Api.Configurations.Options;
 using Contacts.Api.Domain;
 using Contacts.Api.DTOs;
 using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 
 namespace Contacts.Api.Controllers;
 
@@ -22,14 +24,19 @@ public class ContactsController : ControllerBase
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<ContactsController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly CorsConfiguration _corsConfiguration;
 
-    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache, ILogger<ContactsController> logger, IConfiguration configuration)
+    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache, ILogger<ContactsController> logger, 
+        // we should use one or the other, not booth :-)
+        IConfiguration configuration,
+        IOptions<CorsConfiguration> corsOptions)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _corsConfiguration = corsOptions.Value ?? throw new ArgumentNullException(nameof(corsOptions));
     }
 
     // GET api/contacts?search=ski
@@ -37,6 +44,23 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts([FromQuery] string? search)
     {
+        // to test the use of configuration check if this request is coming from allowed origins
+
+        //var origins = new List<string>();
+        //_configuration.Bind("Cors:Origins", origins);
+
+        // using the Options pattern
+        var origins = _corsConfiguration.Origins;
+
+        if (origins.Contains(Request.Headers["Origin"].ToString()))
+        {
+            _logger.LogInformation("Request is coming from an allowed origin");
+        }
+        else
+        {
+            _logger.LogWarning("Request is coming from an unallowed origin");
+        }
+
         var contacts = await _repository.GetContactsAsync(search);
 
         var contactsDto = _mapper.Map<IEnumerable<ContactDto>>(contacts);
@@ -61,20 +85,6 @@ public class ContactsController : ControllerBase
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
         _logger.LogInformation("Getting contact details for contact with id {Id}", id);
-
-        // to test the use of configuration check if this request is coming from allowed origins
-
-        var origins = new List<string>();
-        _configuration.Bind("Cors:Origins", origins);
-
-        if (origins.Contains(Request.Headers["Origin"].ToString()))
-        {
-            _logger.LogInformation("Request is coming from an allowed origin");
-        }
-        else
-        {
-            _logger.LogWarning("Request is coming from an unallowed origin");
-        }
 
         // define a cache key (it should be unique, in our case it will look like "ContactsController-GetContactDetails-1")
         var cacheKey = $"{nameof(ContactsController)}-{nameof(GetContactDetails)}-{id}";
