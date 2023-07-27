@@ -1,4 +1,5 @@
 using Contacts.Api.Configurations.Filters;
+using Contacts.Api.Configurations.Options;
 using Contacts.Api.Infrastructure;
 using Contacts.Api.Infrastructure.Authentication;
 using Contacts.Api.Infrastructure.Repositories;
@@ -10,13 +11,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using System.Reflection;
-using Contacts.Api.Configurations.Options;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
 using Serilog;
 using Serilog.Events;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Reflection;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -41,7 +40,9 @@ builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 //builder.Services.Configure<CorsConfiguration>(builder.Configuration.GetSection("Cors"));
 // v2 - with validation
 builder.Services.AddOptions<CorsConfiguration>().Bind(builder.Configuration.GetSection(CorsConfiguration.SectionName))
-    .ValidateDataAnnotations();
+    .ValidateDataAnnotations()
+    // check if CORS options are valid on startup
+    .ValidateOnStart();
 
 builder.Services.AddCors(options =>
 {
