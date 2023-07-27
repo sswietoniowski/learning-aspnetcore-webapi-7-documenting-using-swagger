@@ -55,13 +55,13 @@ GET {{baseUri}}/contacts HTTP/1.1
 X-API-Version: 2.0
 Authorization: Basic amRvZUB1bmtub3duLmNvbTpQQHNzdzByZA==
 
-### Get contact by id, check if caching is working 
+### Get contact by id, check if caching is working (look at returened headers)
 
 # By default caching would work in the browser (Swagger), but not int the REST Client
 GET {{baseUri}}/contacts/{{id}} HTTP/1.1
 Accept: application/json
 
-### Get contact by id, ignore caching (client can bypass caching)
+### Get contact by id, ignore caching (client can bypass ResponseCache, but we can add InMemoryCache to fix this)
 
 GET {{baseUri}}/contacts/{{id}} HTTP/1.1
 Accept: application/json
