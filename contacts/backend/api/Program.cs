@@ -13,6 +13,14 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System.Reflection;
 using Newtonsoft.Json.Serialization;
+using Serilog;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -198,6 +206,14 @@ builder.Services.AddResponseCaching(options =>
 // add memory cache
 builder.Services.AddMemoryCache();
 
+// add logging support with Serilog: https://www.c-sharpcorner.com/article/structured-logging-using-serilog-in-asp-net-core-7-0/
+// and by using two-stage initialization: https://github.com/serilog/serilog-aspnetcore
+builder.Host.UseSerilog((context, services, configuration) =>
+{
+    configuration.ReadFrom.Configuration(context.Configuration);
+    configuration.ReadFrom.Services(services);
+}, preserveStaticLogger: true);
+
 var app = builder.Build();
 
 app.UseStaticFiles();
@@ -266,6 +282,9 @@ else
     //});
     app.UseStatusCodePages();
 }
+
+// use Serilog request logging
+app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

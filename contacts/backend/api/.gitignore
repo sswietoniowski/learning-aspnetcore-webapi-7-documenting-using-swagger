@@ -478,3 +478,6 @@ $RECYCLE.BIN/
 
 # Exclud IDEA files
 .idea/**
+
+# Exclude log files
+Logs/**

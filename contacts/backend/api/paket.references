@@ -6,3 +6,5 @@ Microsoft.EntityFrameworkCore.SqlServer
 Microsoft.EntityFrameworkCore.Sqlite
 Microsoft.EntityFrameworkCore.Tools
 Swashbuckle.AspNetCore
+Serilog.AspNetCore
+Serilog.Sinks.File

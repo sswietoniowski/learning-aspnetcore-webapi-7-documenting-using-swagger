@@ -42,5 +42,5 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <!-- Uncomment next section if you want to use Paket to manage dependencies -->
-  <Import Project=".paket\Paket.Restore.targets" /> 
+  <Import Project=".paket\Paket.Restore.targets" />
 </Project>
