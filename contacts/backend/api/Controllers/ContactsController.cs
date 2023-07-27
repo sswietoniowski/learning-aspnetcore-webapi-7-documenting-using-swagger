@@ -49,7 +49,8 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequestHeaderMatchesMediaType("Accept", "application/json", "application/xml")]
     // add caching to the response, so that the same request within 60 seconds will be served from the cache
-    [ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+    //[ResponseCache(Location = ResponseCacheLocation.Any, Duration = 60)]
+    [ResponseCache(CacheProfileName = "Any-60")] // this is the same as the above, but we can use a predefined cache profile
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
         var contact = await _repository.GetContactAsync(id);

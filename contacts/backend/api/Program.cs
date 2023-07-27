@@ -44,6 +44,16 @@ builder.Services.AddControllers(configure =>
     configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status401Unauthorized));
     configure.Filters.Add(new ProducesResponseTypeAttribute(StatusCodes.Status500InternalServerError));
     //configure.Filters.Add(new AuthorizeFilter()); // I've added requirement to authorize all actions only to "ContactsControllerV2"
+
+    // caching profiles
+    configure.CacheProfiles.Add("NoCache",
+        new CacheProfile { NoStore = true });
+    configure.CacheProfiles.Add("Any-60",
+        new CacheProfile 
+        { 
+            Location = ResponseCacheLocation.Any,
+            Duration = 60 
+        });
 }).AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
