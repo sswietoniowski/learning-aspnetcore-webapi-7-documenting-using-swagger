@@ -21,13 +21,15 @@ public class ContactsController : ControllerBase
     private readonly IMapper _mapper;
     private readonly IMemoryCache _memoryCache;
     private readonly ILogger<ContactsController> _logger;
+    private readonly IConfiguration _configuration;
 
-    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache, ILogger<ContactsController> logger)
+    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache, ILogger<ContactsController> logger, IConfiguration configuration)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-        _memoryCache = memoryCache;
-        _logger = logger;
+        _memoryCache = memoryCache ?? throw new ArgumentNullException(nameof(memoryCache));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
     }
 
     // GET api/contacts?search=ski
@@ -59,6 +61,20 @@ public class ContactsController : ControllerBase
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
         _logger.LogInformation("Getting contact details for contact with id {Id}", id);
+
+        // to test the use of configuration check if this request is coming from allowed origins
+
+        var origins = new List<string>();
+        _configuration.Bind("Cors:Origins", origins);
+
+        if (origins.Contains(Request.Headers["Origin"].ToString()))
+        {
+            _logger.LogInformation("Request is coming from an allowed origin");
+        }
+        else
+        {
+            _logger.LogWarning("Request is coming from an unallowed origin");
+        }
 
         // define a cache key (it should be unique, in our case it will look like "ContactsController-GetContactDetails-1")
         var cacheKey = $"{nameof(ContactsController)}-{nameof(GetContactDetails)}-{id}";
