@@ -38,10 +38,17 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policyBuilder =>
     {
-        policyBuilder
-            .WithOrigins("http://localhost:3000", "http://localhost:5173")
-            .AllowAnyMethod()
-            .AllowAnyHeader();
+        // read origins from configuration
+
+        var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+
+        if (origins is not null)
+        {
+            policyBuilder
+                .WithOrigins(origins)
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+        }
     });
 });
 
