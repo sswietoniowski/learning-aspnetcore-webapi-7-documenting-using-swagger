@@ -195,6 +195,9 @@ builder.Services.AddResponseCaching(options =>
     //options.UseCaseSensitivePaths = true; // if set to true, caches the responses by using case-sensitive paths (default: false)
 });
 
+// add memory cache
+builder.Services.AddMemoryCache();
+
 var app = builder.Build();
 
 app.UseStaticFiles();

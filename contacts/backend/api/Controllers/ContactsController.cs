@@ -5,6 +5,7 @@ using Contacts.Api.DTOs;
 using Contacts.Api.Infrastructure.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace Contacts.Api.Controllers;
 
@@ -18,11 +19,13 @@ public class ContactsController : ControllerBase
 {
     private readonly IContactsRepository _repository;
     private readonly IMapper _mapper;
+    private readonly IMemoryCache _memoryCache;
 
-    public ContactsController(IContactsRepository repository, IMapper mapper)
+    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+        _memoryCache = memoryCache;
     }
 
     // GET api/contacts?search=ski
@@ -53,14 +56,27 @@ public class ContactsController : ControllerBase
     [ResponseCache(CacheProfileName = "Any-60")] // this is the same as the above, but we can use a predefined cache profile
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
-        var contact = await _repository.GetContactAsync(id);
+        // define a cache key (it should be unique, in our case it will look like "ContactsController-GetContactDetails-1")
+        var cacheKey = $"{nameof(ContactsController)}-{nameof(GetContactDetails)}-{id}";
 
-        if (contact is null)
+        // check if the contact is already in the cache, if not get it from the repository and add it to the cache
+        if (!_memoryCache.TryGetValue<ContactDetailsDto?>(cacheKey, out var contactDto))
+        {
+            var contact = await _repository.GetContactAsync(id);
+
+            if (contact is not null)
+            {
+                contactDto = _mapper.Map<ContactDetailsDto>(contact);
+
+                // add the contact to the cache for 60 seconds
+                _memoryCache.Set(cacheKey, contactDto, TimeSpan.FromSeconds(60));
+            }
+        }
+
+        if (contactDto is null)
         {
             return NotFound();
         }
-
-        var contactDto = _mapper.Map<ContactDetailsDto>(contact);
 
         return Ok(contactDto);
     }
