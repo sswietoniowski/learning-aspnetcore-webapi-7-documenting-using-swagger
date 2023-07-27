@@ -1,18 +1,18 @@
 using Contacts.Api.Configurations.Filters;
 using Contacts.Api.Infrastructure;
+using Contacts.Api.Infrastructure.Authentication;
 using Contacts.Api.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Serialization;
-using System.Reflection;
-using Contacts.Api.Infrastructure.Authentication;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Abstractions;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using System.Reflection;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,10 +49,10 @@ builder.Services.AddControllers(configure =>
     configure.CacheProfiles.Add("NoCache",
         new CacheProfile { NoStore = true });
     configure.CacheProfiles.Add("Any-60",
-        new CacheProfile 
-        { 
+        new CacheProfile
+        {
             Location = ResponseCacheLocation.Any,
-            Duration = 60 
+            Duration = 60
         });
 }).AddNewtonsoftJson(options =>
 {
@@ -238,6 +238,32 @@ else
 {
     // should be added at the beginning of the pipeline
     app.UseExceptionHandler();
+    //// we can customize the exception handling process here
+    //app.UseExceptionHandler(action =>
+    //{
+    //    // we can use customize the exception handling process here
+    //    action.Run(async (context) =>
+    //    {
+    //        var exceptionHandler = context.Features.Get<IExceptionHandlerPathFeature>();
+
+    //        var details = new ProblemDetails
+    //        {
+    //            Detail = exceptionHandler?.Error.Message,
+    //            Extensions =
+    //            {
+    //                ["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier
+    //            },
+    //            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
+    //            Status = StatusCodes.Status500InternalServerError
+    //        };
+
+    //        var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
+
+    //        logger.LogError(exceptionHandler?.Error, exceptionHandler?.Error.Message);
+
+    //        await context.Response.WriteAsync(JsonSerializer.Serialize(details));
+    //    });
+    //});
     app.UseStatusCodePages();
 }
 

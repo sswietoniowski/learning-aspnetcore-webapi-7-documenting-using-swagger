@@ -66,3 +66,8 @@ Accept: application/json
 GET {{baseUri}}/contacts/{{id}} HTTP/1.1
 Accept: application/json
 Cache-Control: max-age=0, no-cache
+
+
+### Call to an endpoint that would throw an error to check if logging is working as expected
+
+GET {{baseUri}}/images HTTP/1.1
