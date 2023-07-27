@@ -40,12 +40,14 @@ builder.Services.AddCors(options =>
     {
         // read origins from configuration
 
-        var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+        // var origins = builder.Configuration.GetSection("Cors:Origins").Get<string[]>();
+        var origins = new List<string>();
+        builder.Configuration.Bind("Cors:Origins", origins);
 
         if (origins is not null)
         {
             policyBuilder
-                .WithOrigins(origins)
+                .WithOrigins(origins.ToArray())
                 .AllowAnyMethod()
                 .AllowAnyHeader();
         }
