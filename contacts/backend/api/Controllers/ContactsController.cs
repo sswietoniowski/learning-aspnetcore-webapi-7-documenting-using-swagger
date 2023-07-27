@@ -20,12 +20,14 @@ public class ContactsController : ControllerBase
     private readonly IContactsRepository _repository;
     private readonly IMapper _mapper;
     private readonly IMemoryCache _memoryCache;
+    private readonly ILogger<ContactsController> _logger;
 
-    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache)
+    public ContactsController(IContactsRepository repository, IMapper mapper, IMemoryCache memoryCache, ILogger<ContactsController> logger)
     {
         _repository = repository ?? throw new ArgumentNullException(nameof(repository));
         _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _memoryCache = memoryCache;
+        _logger = logger;
     }
 
     // GET api/contacts?search=ski
@@ -56,12 +58,16 @@ public class ContactsController : ControllerBase
     [ResponseCache(CacheProfileName = "Any-60")] // this is the same as the above, but we can use a predefined cache profile
     public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
     {
+        _logger.LogInformation("Getting contact details for contact with id {Id}", id);
+
         // define a cache key (it should be unique, in our case it will look like "ContactsController-GetContactDetails-1")
         var cacheKey = $"{nameof(ContactsController)}-{nameof(GetContactDetails)}-{id}";
 
         // check if the contact is already in the cache, if not get it from the repository and add it to the cache
         if (!_memoryCache.TryGetValue<ContactDetailsDto?>(cacheKey, out var contactDto))
         {
+            _logger.LogInformation("Contact with id {Id} wasn't found in the cache, getting it from the repository", id);
+
             var contact = await _repository.GetContactAsync(id);
 
             if (contact is not null)
@@ -75,6 +81,8 @@ public class ContactsController : ControllerBase
 
         if (contactDto is null)
         {
+            _logger.LogWarning("Contact with id {Id} wasn't found", id);
+
             return NotFound();
         }
 
