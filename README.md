@@ -1677,7 +1677,7 @@ I used:
 Now you can visit (while the application is running):
 
 - [Swagger UI provided by NSwag](https://localhost:5001/docs/index.html),
-- ReDoc UI provided by NSwag [v1.0](https://localhost:5001/redoc/v1.0) and [v2.0]() as there is no version selector in the ReDoc UI.
+- ReDoc UI provided by NSwag [v1.0](https://localhost:5001/redoc/v1.0) and [v2.0](https://localhost:5001/redoc/v2.0) as there is no version selector in the ReDoc UI.
 
 In the end I've spent a lot of time trying to solve the following issues:
 
