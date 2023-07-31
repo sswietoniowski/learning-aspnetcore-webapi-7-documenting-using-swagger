@@ -1227,6 +1227,8 @@ Finally we can check if it works:
 curl -v -H "X-API-Version: 1.0" https://localhost:5001/api/contacts
 ```
 
+One might want to read [this](https://www.thecodebuzz.com/restful-api-versioning-best-practices/) article about best practices related to API versioning.
+
 ### Protecting Your API
 
 Documentation for you API should describe how to authenticate with it, if applicable.
