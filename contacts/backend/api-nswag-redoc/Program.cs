@@ -151,7 +151,7 @@ foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions
             };
             // document.Info.TermsOfService = ...
         };
-        config.ApiGroupNames = new[] { description.ApiVersion.ToString() };
+        config.ApiGroupNames = new[] { description.GroupName };
 
         config.AddSecurity("Basic", Enumerable.Empty<string>(),
             new OpenApiSecurityScheme()
