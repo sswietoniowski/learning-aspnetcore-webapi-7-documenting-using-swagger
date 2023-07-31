@@ -1526,7 +1526,9 @@ An interesting description about how to use NSwag & Redoc for OpenAPI documentat
 - [authentication/authorization](https://www.thecodebuzz.com/nswag-basic-authentication-openapi-documentation-asp-net-core/)
 - [versioning](https://www.thecodebuzz.com/nswag-api-versioning-swagger-openapi-net-core-documentation/),
 - [general overview](https://onthecode.co.uk/blog/automating-api-documentation-nswag),
-- [Swashbuckle vs NSwag comparison](https://code-maze.com/aspnetcore-swashbuckle-vs-nswag/).
+- [Swashbuckle vs NSwag comparison](https://code-maze.com/aspnetcore-swashbuckle-vs-nswag/),
+- [ReDoc example](https://blog.christian-schou.dk/how-to-make-api-documentation-using-swagger/),
+- [Swagger UI vs ReDoc comparison](https://www.blobr.io/vs-pages/swagger-vs-redoc).
 
 To use NSwag & Redoc I've you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
 
@@ -1660,13 +1662,29 @@ I used:
         options.DocExpansion = "none"; // hide the "Models" section
         options.AdditionalSettings.Add("persistAuthorization", true);
     });
+
+    // to serve ReDoc UI provided by NSwag
+    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        app.UseReDoc(options =>
+        {
+            options.Path = $"/redoc/{description.GroupName}"; // serve the UI at https://localhost:5001/redoc/v1.0
+            options.DocumentPath = $"/swagger/{description.GroupName}/swagger.json";
+        });
+    }
 ```
+
+Now you can visit (while the application is running):
+
+- [Swagger UI provided by NSwag](https://localhost:5001/docs/index.html),
+- ReDoc UI provided by NSwag [v1.0](https://localhost:5001/redoc/v1.0) and [v2.0]() as there is no version selector in the ReDoc UI.
 
 In the end I've spent a lot of time trying to solve the following issues:
 
 - how to handle API versioning in NSwag (I wasn't able to find one good description even though I've found many articles explaining how - at least in theory - this should be done),
 - what to do in case of conflicting versions of methods (but that was also difficult to solve in Swashbuckle).
-- ReDoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult.
+- ReDoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult,
+- ReDoc UI (free plan) doesn't support "Try It Out" option.
 
 **Notice**:
 

@@ -214,6 +214,16 @@ if (app.Environment.IsDevelopment())
         options.DocExpansion = "none"; // hide the "Models" section
         options.AdditionalSettings.Add("persistAuthorization", true);
     });
+
+    // to serve ReDoc UI provided by NSwag
+    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+    {
+        app.UseReDoc(options =>
+        {
+            options.Path = $"/redoc/{description.GroupName}"; // serve the UI at https://localhost:5001/redoc/v1.0
+            options.DocumentPath = $"/swagger/{description.GroupName}/swagger.json";
+        });
+    }
 }
 else
 {
