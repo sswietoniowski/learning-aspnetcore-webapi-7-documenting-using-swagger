@@ -1516,12 +1516,16 @@ Couple of things that I found interesting.
 
 ### NSwag & Redoc
 
-Instead of using Swagger for generating documentation you can use already mentioned NSwag, as for Swagger UI you can use (also mentioned) Redoc.
+Instead of using Swashbuckle for generating documentation you can use already mentioned NSwag, as for Swagger UI you can use (also mentioned) Redoc.
 
 To show you how to do that I've created a [copy](./contacts/backend/api-nswag-redoc/) of the original [contacts](./contacts/backend/api/) project.
 
-An interesting description about how to use NSwag & Redoc for OpenAPI documentation generation and presentation can be found [here - basics](https://www.thecodebuzz.com/nswag-swagger-api-documentation-in-net-core/)
-and [here - authentication/authorization](https://www.thecodebuzz.com/nswag-basic-authentication-openapi-documentation-asp-net-core/) and [here - versioning](https://www.thecodebuzz.com/nswag-api-versioning-swagger-openapi-net-core-documentation/).
+An interesting description about how to use NSwag & Redoc for OpenAPI documentation generation and presentation:
+
+- [basics](https://www.thecodebuzz.com/nswag-swagger-api-documentation-in-net-core/),
+- [authentication/authorization](https://www.thecodebuzz.com/nswag-basic-authentication-openapi-documentation-asp-net-core/)
+- [versioning](https://www.thecodebuzz.com/nswag-api-versioning-swagger-openapi-net-core-documentation/),
+- [general overview](https://onthecode.co.uk/blog/automating-api-documentation-nswag).
 
 To use NSwag & Redoc I've you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
 
@@ -1567,11 +1571,10 @@ Serilog.AspNetCore
 Serilog.Sinks.File
 ```
 
-I have to change couple things in this project:
+I have to change couple things in this project.
 
-- remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter`,
-- change how OpenAPI documentation generation is registered & used and how its UI is provided,
-- remove some methods from the controllers (I didn't want to fight with errors caused by myl)
+1. Remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter`,
+2. Change how OpenAPI documentation generation is registered & used and how its UI is provided.
 
 ## Summary
 

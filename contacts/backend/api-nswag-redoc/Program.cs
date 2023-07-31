@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Serialization;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using Serilog;
 using Serilog.Events;
 using System.Reflection;
-using NSwag;
-using NSwag.Generation.Processors.Security;
 
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
@@ -135,7 +135,7 @@ foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions
         config.PostProcess = document =>
         {
             document.Info.Title = "Contacts API";
-            document.Info.Version = description.ApiVersion.ToString();
+            document.Info.Version = "v" + description.ApiVersion.ToString();
             document.Info.Description = "Contacts API for managing contacts";
             document.Info.Contact = new OpenApiContact
             {
@@ -150,6 +150,8 @@ foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions
             };
             // document.Info.TermsOfService = ...
         };
+        config.ApiGroupNames = new[] { description.ApiVersion.ToString() };
+
         config.AddSecurity("Basic", Enumerable.Empty<string>(),
             new OpenApiSecurityScheme()
             {
@@ -202,30 +204,14 @@ if (app.Environment.IsDevelopment())
     app.UseOpenApi();
 
     // to serve OpenAPI UI provided by NSwag
-    app.UseSwaggerUi3();
+    app.UseSwaggerUi3(options =>
+    {
+        options.Path = ""; // serve the UI at root (https://localhost:5001)
 
-    //app.UseSwaggerUI(options =>
-    //{
-    //    foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
-    //    {
-    //        options.SwaggerEndpoint($"/swagger/ContactsAPISpecification{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-    //    }
-    //    options.RoutePrefix = ""; // serve the UI at root (https://localhost:5001)
-
-    //    // customize the UI
-    //    options.DefaultModelsExpandDepth(2); // show nested models (default is 1)
-    //    options.DefaultModelRendering(ModelRendering.Model); // show the model as a JSON object
-    //    options.DocExpansion(DocExpansion.None); // hide the "Models" section
-    //    options.EnableFilter(); // enable the filter box
-    //    options.EnableDeepLinking(); // enable deep linking for tags and operations
-    //    options.DisplayOperationId(); // display operation ID's
-
-    //    // inject custom CSS
-    //    options.InjectStylesheet("/assets/custom-ui.css");
-
-    //    // inject custom index page
-    //    options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
-    //});
+        // customize the UI
+        options.DocExpansion = "none"; // hide the "Models" section
+        options.AdditionalSettings.Add("persistAuthorization", true);
+    });
 }
 else
 {

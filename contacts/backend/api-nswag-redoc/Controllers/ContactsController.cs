@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using NSwag.Annotations;
 
 namespace Contacts.Api.Controllers;
 
@@ -128,7 +129,7 @@ public class ContactsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [RequestHeaderMatchesMediaType("Accept", "application/vnd.company.contact+json")]
-    [ApiExplorerSettings(IgnoreApi = true)] // this will hide the action from the Swagger UI and thus resolve the conflict
+    [OpenApiIgnore] // replacement for [ApiExplorerSettings(IgnoreApi = true)] as NSwag doesn't support ApiExplorerSettingsAttribute
     public async Task<ActionResult<ContactDto>> GetContact(int id)
     {
         var contact = await _repository.GetContactAsync(id);
