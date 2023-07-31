@@ -58,6 +58,8 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
     - [Branding the UI](#branding-the-ui)
     - [Branding the UI by Injecting Custom CSS](#branding-the-ui-by-injecting-custom-css)
     - [Branding the UI by Injecting a Custom Index Page](#branding-the-ui-by-injecting-a-custom-index-page)
+  - [Extras](#extras)
+    - [NSwag \& Redoc](#nswag--redoc)
   - [Summary](#summary)
 
 ## Setup
@@ -1507,6 +1509,69 @@ builder.Services.AddSwaggerGen(options =>
     options.IndexStream = () => typeof(Program).Assembly.GetManifestResourceStream("Contacts.Api.EmbeddedAssets.index.html");
 });
 ```
+
+## Extras
+
+Couple of things that I found interesting.
+
+### NSwag & Redoc
+
+Instead of using Swagger for generating documentation you can use already mentioned NSwag, as for Swagger UI you can use (also mentioned) Redoc.
+
+To show you how to do that I've created a [copy](./contacts/backend/api-nswag-redoc/) of the original [contacts](./contacts/backend/api/) project.
+
+An interesting description about how to use NSwag & Redoc for OpenAPI documentation generation and presentation can be found [here - basics](https://www.thecodebuzz.com/nswag-swagger-api-documentation-in-net-core/)
+and [here - authentication/authorization](https://www.thecodebuzz.com/nswag-basic-authentication-openapi-documentation-asp-net-core/) and [here - versioning](https://www.thecodebuzz.com/nswag-api-versioning-swagger-openapi-net-core-documentation/).
+
+To use NSwag & Redoc I've you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
+
+```cmd
+dotnet remove package Swashbuckle.AspNetCore
+dotnet add package NSwag.AspNetCore
+```
+
+Because I'm using Paket for managing dependencies, my changes were applied to `paket.dependencies` and `paket.references` files.
+
+`paket.dependencies`:
+
+```txt
+source https://api.nuget.org/v3/index.json
+
+storage: none
+framework: net7.0
+
+nuget AutoMapper.Extensions.Microsoft.DependencyInjection
+nuget Microsoft.AspNetCore.Mvc.NewtonsoftJson
+nuget Microsoft.AspNetCore.Mvc.Versioning
+nuget Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
+nuget Microsoft.EntityFrameworkCore.SqlServer
+nuget Microsoft.EntityFrameworkCore.Sqlite
+nuget Microsoft.EntityFrameworkCore.Tools
+nuget NSwag.AspNetCore
+nuget Serilog.AspNetCore
+nuget Serilog.Sinks.File
+```
+
+`paket.references`:
+
+```txt
+AutoMapper.Extensions.Microsoft.DependencyInjection
+Microsoft.AspNetCore.Mvc.NewtonsoftJson
+Microsoft.AspNetCore.Mvc.Versioning
+Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
+Microsoft.EntityFrameworkCore.SqlServer
+Microsoft.EntityFrameworkCore.Sqlite
+Microsoft.EntityFrameworkCore.Tools
+NSwag.AspNetCore
+Serilog.AspNetCore
+Serilog.Sinks.File
+```
+
+I have to change couple things in this project:
+
+- remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter`,
+- change how OpenAPI documentation generation is registered & used and how its UI is provided,
+- remove some methods from the controllers (I didn't want to fight with errors caused by myl)
 
 ## Summary
 

@@ -1,0 +1,15 @@
+source https://api.nuget.org/v3/index.json
+
+storage: none
+framework: net7.0
+
+nuget AutoMapper.Extensions.Microsoft.DependencyInjection
+nuget Microsoft.AspNetCore.Mvc.NewtonsoftJson
+nuget Microsoft.AspNetCore.Mvc.Versioning
+nuget Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer
+nuget Microsoft.EntityFrameworkCore.SqlServer
+nuget Microsoft.EntityFrameworkCore.Sqlite
+nuget Microsoft.EntityFrameworkCore.Tools
+nuget NSwag.AspNetCore
+nuget Serilog.AspNetCore
+nuget Serilog.Sinks.File
