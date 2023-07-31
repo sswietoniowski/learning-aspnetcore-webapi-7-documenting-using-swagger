@@ -1525,7 +1525,8 @@ An interesting description about how to use NSwag & Redoc for OpenAPI documentat
 - [basics](https://www.thecodebuzz.com/nswag-swagger-api-documentation-in-net-core/),
 - [authentication/authorization](https://www.thecodebuzz.com/nswag-basic-authentication-openapi-documentation-asp-net-core/)
 - [versioning](https://www.thecodebuzz.com/nswag-api-versioning-swagger-openapi-net-core-documentation/),
-- [general overview](https://onthecode.co.uk/blog/automating-api-documentation-nswag).
+- [general overview](https://onthecode.co.uk/blog/automating-api-documentation-nswag),
+- [Swashbuckle vs NSwag comparison](https://code-maze.com/aspnetcore-swashbuckle-vs-nswag/).
 
 To use NSwag & Redoc I've you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
 
@@ -1573,8 +1574,105 @@ Serilog.Sinks.File
 
 I have to change couple things in this project.
 
-1. Remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter`,
+1. Remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter` (and `Filters` folder),
 2. Change how OpenAPI documentation generation is registered & used and how its UI is provided.
+
+Instead of:
+
+```csharp
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+}
+```
+
+I had to use:
+
+```csharp
+// register OpenAPI v3 document generator with NSwag
+foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+{
+    // to support OpenAPI v3.0.0 use AddOpenApiDocument, for Swagger (v2.0) use AddSwaggerDocument
+    builder.Services.AddOpenApiDocument(config =>
+    {
+        config.DocumentName = "v" + description.ApiVersion.ToString();
+        config.PostProcess = document =>
+        {
+            document.Info.Title = "Contacts API";
+            document.Info.Version = "v" + description.ApiVersion.ToString();
+            document.Info.Description = "Contacts API for managing contacts";
+            document.Info.Contact = new OpenApiContact
+            {
+                Name = "John Doe",
+                Email = "jdoe@getnada.com",
+                Url = "https://www.twitter.com/jdoe"
+            };
+            document.Info.License = new OpenApiLicense
+            {
+                Name = "MIT",
+                Url = "https://opensource.org/licenses/MIT"
+            };
+            // document.Info.TermsOfService = ...
+        };
+        config.ApiGroupNames = new[] { description.ApiVersion.ToString() };
+
+        config.AddSecurity("Basic", Enumerable.Empty<string>(),
+            new OpenApiSecurityScheme()
+            {
+                Type = OpenApiSecuritySchemeType.Basic,
+                Name = "Authorization",
+                In = OpenApiSecurityApiKeyLocation.Header,
+                Description = "Input your username and password to access this API"
+            });
+
+        config.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("Basic"));
+    });
+}
+```
+
+and instead of:
+
+```csharp
+    // to generate Swagger JSON at runtime
+    app.UseSwagger();
+
+    // to serve Swagger UI
+    app.UseSwaggerUI(options =>
+    {
+        // ...
+    });
+```
+
+I used:
+
+```csharp
+    // to generate OpenAPI documentation at runtime with NSwag
+    // for OpenAPI v3.0.0 use UseOpenApi, for Swagger (v2.0) use UseSwagger
+    app.UseOpenApi();
+
+    // to serve OpenAPI/Swagger UI provided by NSwag
+    app.UseSwaggerUi3(options =>
+    {
+        options.Path = "/docs"; // serve the UI at https://localhost:5001/docs which seems to be more appropriate
+
+        // customize the UI
+        options.DocExpansion = "none"; // hide the "Models" section
+        options.AdditionalSettings.Add("persistAuthorization", true);
+    });
+```
+
+In the end I've spent a lot of time trying to solve the following issues:
+
+- how to handle API versioning in NSwag (I wasn't able to find one good description even though I've found many articles explaining how - at least in theory - this should be done),
+- what to do in case of conflicting versions of methods (but that was also difficult to solve in Swashbuckle).
+- ReDoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult.
+
+**Notice**:
+
+> One might use ReDoc UI without using NSwag to generate documentation, as it is able to consume the documentation created with Swashbuckle, and can be [added](https://dev.to/caiocesar/swagger-and-redoc-for-documenting-web-api-in-net-5-2ba0) independently.
+
+So in the future I would rather use Swashbuckle as it is supported out of the box and I can use it the way I like it.
 
 ## Summary
 

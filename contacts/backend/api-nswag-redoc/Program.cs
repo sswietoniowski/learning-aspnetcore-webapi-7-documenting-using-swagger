@@ -129,7 +129,8 @@ var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetR
 // register OpenAPI v3 document generator with NSwag
 foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
 {
-    builder.Services.AddSwaggerDocument(config =>
+    // to support OpenAPI v3.0.0 use AddOpenApiDocument, for Swagger (v2.0) use AddSwaggerDocument
+    builder.Services.AddOpenApiDocument(config =>
     {
         config.DocumentName = "v" + description.ApiVersion.ToString();
         config.PostProcess = document =>
@@ -201,12 +202,13 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 
     // to generate OpenAPI documentation at runtime with NSwag
+    // for OpenAPI v3.0.0 use UseOpenApi, for Swagger (v2.0) use UseSwagger
     app.UseOpenApi();
 
-    // to serve OpenAPI UI provided by NSwag
+    // to serve OpenAPI/Swagger UI provided by NSwag
     app.UseSwaggerUi3(options =>
     {
-        options.Path = ""; // serve the UI at root (https://localhost:5001)
+        options.Path = "/docs"; // serve the UI at https://localhost:5001/docs which seems to be more appropriate
 
         // customize the UI
         options.DocExpansion = "none"; // hide the "Models" section
