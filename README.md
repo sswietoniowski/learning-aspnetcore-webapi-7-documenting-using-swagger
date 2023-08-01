@@ -1532,7 +1532,7 @@ An interesting description about how to use NSwag & Redoc for OpenAPI documentat
 - [ReDoc example](https://blog.christian-schou.dk/how-to-make-api-documentation-using-swagger/),
 - [Swagger UI vs ReDoc comparison](https://www.blobr.io/vs-pages/swagger-vs-redoc).
 
-To use NSwag & Redoc I've you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
+To use NSwag & Redoc you have to remove `Swashbuckle.AspNetCore` and add `NSwag.AspNetCore` to the project:
 
 ```cmd
 dotnet remove package Swashbuckle.AspNetCore
