@@ -1518,7 +1518,7 @@ Couple of things that I found interesting.
 
 ### NSwag & Redoc
 
-Instead of using Swashbuckle for generating documentation you can use already mentioned NSwag, as for Swagger UI you can use (also mentioned) Redoc.
+Instead of using Swashbuckle for generating documentation you can use already mentioned [NSwag](https://github.com/RicoSuter/NSwag), as for Swagger UI you can use (also mentioned) [Redoc](https://github.com/Redocly/redoc).
 
 To show you how to do that I've created a [copy](./contacts/backend/api-nswag-redoc/) of the original [contacts](./contacts/backend/api/) project.
 
@@ -1578,7 +1578,7 @@ Serilog.Sinks.File
 
 I have to change couple things in this project.
 
-1. Remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter` (and `Filters` folder),
+1. Remove filter classes `CreateContactOperationFilter` and `GetContactOperationFilter` (and `Filters` folder).
 2. Change how OpenAPI documentation generation is registered & used and how its UI is provided.
 
 Instead of:
@@ -1594,7 +1594,7 @@ builder.Services.AddSwaggerGen(options =>
 I had to use:
 
 ```csharp
-// register OpenAPI v3 document generator with NSwag
+// register OpenAPI v3 document generator with NSwag (each API version has its own document)
 foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
 {
     // to support OpenAPI v3.0.0 use AddOpenApiDocument, for Swagger (v2.0) use AddSwaggerDocument
@@ -1661,11 +1661,14 @@ I used:
         options.Path = "/docs"; // serve the UI at https://localhost:5001/docs which seems to be more appropriate
 
         // customize the UI
-        options.DocExpansion = "none"; // hide the "Models" section
+        options.DocExpansion = "list"; // hide the "Models" section
         options.AdditionalSettings.Add("persistAuthorization", true);
+
+        // customize Swagger UI look with CSS
+        options.CustomStylesheetPath = "/assets/custom-ui.css";
     });
 
-    // to serve ReDoc UI provided by NSwag
+    // to serve ReDoc UI provided by NSwag (each version has its own UI)
     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {
         app.UseReDoc(options =>
@@ -1679,26 +1682,26 @@ I used:
 Now you can visit (while the application is running):
 
 - [Swagger UI provided by NSwag](https://localhost:5001/docs/index.html),
-- ReDoc UI provided by NSwag [v1.0](https://localhost:5001/redoc/v1.0) and [v2.0](https://localhost:5001/redoc/v2.0) as there is no version selector in the ReDoc UI.
+- Redoc UI provided by NSwag [v1.0](https://localhost:5001/redoc/v1.0) and [v2.0](https://localhost:5001/redoc/v2.0) as there is no version selector in the Redoc UI.
 
 Examples:
 
-![ReDoc UI 1](./img/05_redoc_ui_1.jpg)
+![Redoc UI 1](./img/05_redoc_ui_1.jpg)
 
-![ReDoc UI 2](./img/05_redoc_ui_2.jpg)
+![Redoc UI 2](./img/05_redoc_ui_2.jpg)
 
-In the end I've spent a lot of time trying to solve the following issues:
+Couple points in the end:
 
-- how to handle API versioning in NSwag (I wasn't able to find one good description even though I've found many articles explaining how - at least in theory - this should be done),
-- what to do in case of conflicting versions of methods (but that was also difficult to solve in Swashbuckle).
-- ReDoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult,
-- ReDoc UI (free plan) doesn't support "Try It Out" option.
+- I've spent a lot of time trying to solve different issues with NSwag & ReDoc, but I wasn't able to solve all of them,
+- handling API versioning in NSwag was rather difficult, due to poor documentation and lack of examples (also a lot of examples you can find are outdated as NSwag is evolving fast and with many breaking changes),
+- I don't know what to do in NSwag in case of conflicting actions (but that was also difficult to solve in Swashbuckle),
+- NSwag was able to generate documentation from XML comments without any additional configuration (Swashbuckle required it),
+- NSwag can be used not only to generate documentation but also to generate client code (C#, TypeScript, ...), more on that [here](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-accessing-using-httpclient#generating-dto-classes) and [here](),
+- Redoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult,
+- Redoc UI (free plan) doesn't support "Try It Out" option,
+- one might use ReDoc UI without using NSwag to generate documentation, as it is able to consume the documentation created with Swashbuckle, and can be [added](https://dev.to/caiocesar/swagger-and-redoc-for-documenting-web-api-in-net-5-2ba0) independently.
 
-**Notice**:
-
-> One might use ReDoc UI without using NSwag to generate documentation, as it is able to consume the documentation created with Swashbuckle, and can be [added](https://dev.to/caiocesar/swagger-and-redoc-for-documenting-web-api-in-net-5-2ba0) independently.
-
-So in the future I would rather use Swashbuckle as it is supported out of the box and I can use it the way I like it.
+So in the future I would rather use Swashbuckle as it is supported out of the box and I can use it the way I like it, but I will check out what NSwag & Redoc has to offer from time to time.
 
 ## Summary
 

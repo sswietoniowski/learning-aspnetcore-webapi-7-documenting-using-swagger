@@ -126,7 +126,7 @@ builder.Services.AddVersionedApiExplorer(options =>
 var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
 #pragma warning restore ASP0000
 
-// register OpenAPI v3 document generator with NSwag
+// register OpenAPI v3 document generator with NSwag (each API version has its own document)
 foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
 {
     // to support OpenAPI v3.0.0 use AddOpenApiDocument, for Swagger (v2.0) use AddSwaggerDocument
@@ -211,11 +211,14 @@ if (app.Environment.IsDevelopment())
         options.Path = "/docs"; // serve the UI at https://localhost:5001/docs which seems to be more appropriate
 
         // customize the UI
-        options.DocExpansion = "none"; // hide the "Models" section
+        options.DocExpansion = "list"; // hide the "Models" section
         options.AdditionalSettings.Add("persistAuthorization", true);
+
+        // customize Swagger UI look with CSS
+        options.CustomStylesheetPath = "/assets/custom-ui.css";
     });
 
-    // to serve ReDoc UI provided by NSwag
+    // to serve ReDoc UI provided by NSwag (each version has its own UI)
     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {
         app.UseReDoc(options =>
