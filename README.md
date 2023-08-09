@@ -429,7 +429,7 @@ We might be able to improve our documentation even further with examples (like s
 
 ### Improving Documentation by Describing Responses
 
-We can describe responses (`<response code="...">...</response>`), example:
+We can describe responses with XML comments (`<response code="...">...</response>`), example:
 
 ```csharp
     /// <summary>
