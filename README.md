@@ -1696,7 +1696,7 @@ Couple points in the end:
 - handling API versioning in NSwag was rather difficult, due to poor documentation and lack of examples (also a lot of examples you can find are outdated as NSwag is evolving fast and with many breaking changes),
 - I don't know what to do in NSwag in case of conflicting actions (but that was also difficult to solve in Swashbuckle),
 - NSwag was able to generate documentation from XML comments without any additional configuration (Swashbuckle required it),
-- NSwag can be used not only to generate documentation but also to generate client code (C#, TypeScript, ...), more on that [here](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-accessing-using-httpclient#generating-dto-classes) and [here](),
+- NSwag can be used not only to generate documentation but also to generate client code (C#, TypeScript, ...), more on that [here](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-accessing-using-httpclient#generating-dto-classes),
 - Redoc UI was nice and I might try to use it instead of Swagger UI in the future, but again support for API versioning was difficult,
 - Redoc UI (free plan) doesn't support "Try It Out" option,
 - one might use ReDoc UI without using NSwag to generate documentation, as it is able to consume the documentation created with Swashbuckle, and can be [added](https://dev.to/caiocesar/swagger-and-redoc-for-documenting-web-api-in-net-5-2ba0) independently.
