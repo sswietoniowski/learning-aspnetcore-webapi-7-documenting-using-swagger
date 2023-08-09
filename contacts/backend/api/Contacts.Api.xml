@@ -11,6 +11,9 @@
             <param name="id">The id of the contact you want to get</param>
             <returns>An ActionResult of type ContactDetailsDto</returns>
             <response code="200">Returns the requested contact</response>
+            <response code="404">If the contact is not found</response>
+            <response code="406">If the Accept header is not valid</response>
+            <response code="500">If there was an internal server error</response>
         </member>
         <member name="M:Contacts.Api.Controllers.ContactsController.GetContact(System.Int32)">
             <summary>

@@ -25,7 +25,9 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
     - [Incorporating Swashbuckle Annotations](#incorporating-swashbuckle-annotations)
     - [Improving Documentation with Data Annotations](#improving-documentation-with-data-annotations)
     - [Improving Documentation with Examples](#improving-documentation-with-examples)
+    - [Improving Documentation by Describing Responses](#improving-documentation-by-describing-responses)
     - [Ignoring Warnings Where Appropriate](#ignoring-warnings-where-appropriate)
+    - [Excluding Reserved Endpoints](#excluding-reserved-endpoints)
     - [Adding API Information and Description](#adding-api-information-and-description)
   - [Customizing OpenAPI Generation with Attributes and Conventions](#customizing-openapi-generation-with-attributes-and-conventions)
     - [The Importance of ApiExplorer](#the-importance-of-apiexplorer)
@@ -322,7 +324,7 @@ Then I had to run:
 dotnet paket install
 ```
 
-Now I can use Swashbuclke like so:
+Now I can use Swashbuckle like so (notice the `SwaggerOperation` and `SwaggerParameter` attributes, and also `Tags` property used for grouping actions in the Swagger UI):
 
 ```csharp
     // GET api/contacts?search=ski
@@ -343,7 +345,7 @@ Now I can use Swashbuclke like so:
     }
 ```
 
-To enable Swashbuckle annotations we must add the following setting to `AddSwaggerGen`:
+To enable Swashbuckle annotations we must add the following settings to `AddSwaggerGen`:
 
 ```csharp
 // register Swagger generator
@@ -354,6 +356,10 @@ builder.Services.AddSwaggerGen(options =>
     // ...
 });
 ```
+
+**Notice:**
+
+> `Tags` property of `[SwaggerOperation]` attribute is used to group actions in the Swagger UI. This might be especially useful for Minimal APIs (as there is no automatic way to group actions by controllers).
 
 These annotations can also be used with Minimal APIs.
 
@@ -419,6 +425,56 @@ We might be able to improve our documentation even further with examples (like s
     // ...
 ```
 
+### Improving Documentation by Describing Responses
+
+We can describe responses (`<response code="...">...</response>`), example:
+
+```csharp
+    /// <summary>
+    /// Get a contact details by their id
+    /// </summary>
+    /// <param name="id">The id of the contact you want to get</param>
+    /// <returns>An ActionResult of type ContactDetailsDto</returns>
+    /// <response code="200">Returns the requested contact</response>
+    /// <response code="404">If the contact is not found</response>
+    /// <response code="406">If the Accept header is not valid</response>
+    /// <response code="500">If there was an internal server error</response>
+    // GET api/contacts/1
+    [HttpGet("{id:int}", Name = "GetContact")]
+    [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [RequestHeaderMatchesMediaType("Accept", "application/json", "application/xml")]
+    [ResponseCache(CacheProfileName = "Any-60")] // this is the same as the above, but we can use a predefined cache profile
+    public async Task<ActionResult<ContactDetailsDto>> GetContactDetails(int id)
+    {
+        // ...
+    }
+```
+
+Alternatively we can use Swashbuckle `[SwaggerResponse]` annotations like so:
+
+```csharp
+    // GET api/contacts?search=ski
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Summary = "Get contacts.",
+        Description = "Retrieves a list of contacts with custom searching.",
+        OperationId = "GetContacts",
+        Tags = new[] { "Contacts" }  // this will group the action under the "Contacts" tag in the Swagger UI
+    )]
+    [SwaggerResponse(StatusCodes.Status200OK, "A list of contacts", typeof(IEnumerable<ContactDto>))]
+    [SwaggerResponse(StatusCodes.Status406NotAcceptable, "The Accept header must be application/json or application/xml")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "There was an error while processing the request")]
+    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts(
+        [FromQuery]
+        [SwaggerParameter("The search string used to filter the contacts", Required = false)]
+        string? search)
+    {
+        // ...
+    }
+```
+
 ### Ignoring Warnings Where Appropriate
 
 To prevent warnings generation for the parts of our code that were not documented with XML comments we already added this section to our project file:
@@ -426,6 +482,24 @@ To prevent warnings generation for the parts of our code that were not documente
 ```xml
 <NoWarn>$(NoWarn);1591</NoWarn>
 ```
+
+### Excluding Reserved Endpoints
+
+Sometimes we might want to exclude some endpoints from the OpenAPI specification, for example the health check endpoint.
+
+We can do that by using `[ApiExplorerSettings]` like so:
+
+```csharp
+[ApiController]
+[ApiExplorerSettings(IgnoreApi = true)]
+[Route("api/images")]
+public class ImagesController : ControllerBase
+{
+    // ...
+}
+```
+
+Of course that will exclude the endpoint from the Swagger UI (`swagger.json`), but it will still be available for the clients (provided that they know the endpoint).
 
 ### Adding API Information and Description
 

@@ -40,15 +40,18 @@ public class ContactsController : ControllerBase
         _corsConfiguration = corsOptions.Value ?? throw new ArgumentNullException(nameof(corsOptions));
     }
 
-    // GET api/contacts?search=ski
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation(
         Summary = "Get contacts.",
         Description = "Retrieves a list of contacts with custom searching.",
         OperationId = "GetContacts",
-        Tags = new[] { "Contacts" }
+        Tags = new[] { "Contacts" }  // this will group the action under the "Contacts" tag in the Swagger UI
     )]
+    [SwaggerResponse(StatusCodes.Status200OK, "A list of contacts", typeof(IEnumerable<ContactDto>))]
+    [SwaggerResponse(StatusCodes.Status406NotAcceptable, "The Accept header must be application/json or application/xml")]
+    [SwaggerResponse(StatusCodes.Status500InternalServerError, "There was an error while processing the request")]
+    // GET api/contacts?search=ski
     public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts(
         [FromQuery] 
         [SwaggerParameter("The search string used to filter the contacts", Required = false)]
@@ -85,6 +88,9 @@ public class ContactsController : ControllerBase
     /// <param name="id">The id of the contact you want to get</param>
     /// <returns>An ActionResult of type ContactDetailsDto</returns>
     /// <response code="200">Returns the requested contact</response>
+    /// <response code="404">If the contact is not found</response>
+    /// <response code="406">If the Accept header is not valid</response>
+    /// <response code="500">If there was an internal server error</response>
     // GET api/contacts/1
     [HttpGet("{id:int}", Name = "GetContact")]
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ContactDetailsDto))] // we can specify the type of the response, but it's not required
