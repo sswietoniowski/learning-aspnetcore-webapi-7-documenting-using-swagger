@@ -131,6 +131,8 @@ var apiVersionDescriptionProvider = builder.Services.BuildServiceProvider().GetR
 // register Swagger generator
 builder.Services.AddSwaggerGen(options =>
 {
+    options.EnableAnnotations();
+
     options.AddSecurityDefinition("basicAuth",
         new OpenApiSecurityScheme()
         {

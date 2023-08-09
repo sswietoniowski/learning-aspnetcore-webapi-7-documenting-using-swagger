@@ -11,5 +11,6 @@ nuget Microsoft.EntityFrameworkCore.SqlServer
 nuget Microsoft.EntityFrameworkCore.Sqlite
 nuget Microsoft.EntityFrameworkCore.Tools
 nuget Swashbuckle.AspNetCore
+nuget Swashbuckle.AspNetCore.Annotations
 nuget Serilog.AspNetCore
 nuget Serilog.Sinks.File

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace Contacts.Api.Controllers;
 
@@ -42,7 +43,16 @@ public class ContactsController : ControllerBase
     // GET api/contacts?search=ski
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts([FromQuery] string? search)
+    [SwaggerOperation(
+        Summary = "Get contacts.",
+        Description = "Retrieves a list of contacts with custom searching.",
+        OperationId = "GetContacts",
+        Tags = new[] { "Contacts" }
+    )]
+    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts(
+        [FromQuery] 
+        [SwaggerParameter("The search string used to filter the contacts", Required = false)]
+        string? search)
     {
         // to test the use of configuration check if this request is coming from allowed origins
 

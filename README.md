@@ -21,6 +21,8 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
     - [Adding Swagger UI to the Project](#adding-swagger-ui-to-the-project)
     - [Incorporating XML Comments on Actions](#incorporating-xml-comments-on-actions)
     - [Incorporating XML Comments on Model Classes](#incorporating-xml-comments-on-model-classes)
+    - [XML Documentation Pros and Cons](#xml-documentation-pros-and-cons)
+    - [Incorporating Swashbuckle Annotations](#incorporating-swashbuckle-annotations)
     - [Improving Documentation with Data Annotations](#improving-documentation-with-data-annotations)
     - [Improving Documentation with Examples](#improving-documentation-with-examples)
     - [Ignoring Warnings Where Appropriate](#ignoring-warnings-where-appropriate)
@@ -102,6 +104,14 @@ Public APIs need documentation, but so do in-company APIs.
 Documentation leads to knowledge leads to adoption.
 
 Clear documentation saves time and money.
+
+The technical documentation of a product is useful only to the extent that it meets the needs and expectations of those who read it.
+
+Potential audience [source](https://learning.oreilly.com/library/view/building-web-apis/9781633439481/OEBPS/Text/11.htm):
+
+- _prospectors_ - are passionate developers and IT enthusiasts who are willing to give our web API a try without a compelling need beyond personal interest, knowledge gaining, testing/reviewing purposes, and so on,
+- _contractors_ - are the IT analysts, solution architects, and backend designers who take responsibility for creating products, solving problems, or addressing potential challenges that our web API could help them deal with,
+- _builders_ - are software developers who choose (or are instructed) to use our web API to solve a specific problem. They represent the most technical part of our audience and can be difficult to satisfy, because dealing with our API is part of their working assignment, and they often have limited time to get the job done.
 
 ### Clearing up the Terminology Confusion
 
@@ -277,6 +287,75 @@ public class ContactDetailsDto
     public List<PhoneDto> Phones { get; set; } = new();
 }
 ```
+
+### XML Documentation Pros and Cons
+
+Being able to translate all our code-level comments to API documentation automatically allows us to kill two birds with one stone. If we’re used to writing comments to describe our classes and methods (a developer’s good practice), we can reuse a lot of work. Furthermore, this approach can be particularly useful for internal developers, because they’ll be able to read our API documentation directly from the source code without even having to look at the `swagger.json` file and/or SwaggerUI.
+
+But this notable benefit could easily become a downside. If we want to keep the internal source code documentation (for internal developers) separate from the public API documentation (for third-party developers/end users), for example, we could find this approach to be limited, not to mention that involves potential risk of an involuntary data leak. Code-level comments are typically considered to be confidential by most developers, who could likely use them to keep track of internal notes, warnings, known problems/bugs, vulnerabilities, and other strictly reserved data that shouldn’t be released to the public. To overcome such a problem, we might think about using the `[SwaggerOperation]` and `[SwaggerParameter]` data attribute alternative, which provides better separation of concerns between internal comments and API documentation, along with some neat additional features that we may want to use.
+
+### Incorporating Swashbuckle Annotations
+
+As stated in the previous paragraph there is an alternative to XML comments, and it's using Swashbuckle annotations.
+
+This feature is handled be an optional module `Swashbuckle.AspNetCore.Annotations` which you need to add to your project:
+
+```cmd
+dotnet add package Swashbuckle.AspNetCore.Annotations
+```
+
+In my case I had to edit `packet.dependencies` by adding:
+
+```text
+nuget Swashbuckle.AspNetCore.Annotations
+```
+
+and do the same for `packet.references`:
+
+```text
+Swashbuckle.AspNetCore.Annotations
+```
+
+Then I had to run:
+
+```cmd
+dotnet paket install
+```
+
+Now I can use Swashbuclke like so:
+
+```csharp
+    // GET api/contacts?search=ski
+    [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [SwaggerOperation(
+        Summary = "Get contacts.",
+        Description = "Retrieves a list of contacts with custom searching.",
+        OperationId = "GetContacts",
+        Tags = new[] { "Contacts" }
+    )]
+    public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts(
+        [FromQuery]
+        [SwaggerParameter("The search string used to filter the contacts", Required = false)]
+        string? search)
+    {
+        // ...
+    }
+```
+
+To enable Swashbuckle annotations we must add the following setting to `AddSwaggerGen`:
+
+```csharp
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    options.EnableAnnotations();
+
+    // ...
+});
+```
+
+These annotations can also be used with Minimal APIs.
 
 ### Improving Documentation with Data Annotations
 
