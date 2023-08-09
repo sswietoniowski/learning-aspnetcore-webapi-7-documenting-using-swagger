@@ -40,6 +40,7 @@ public class ContactsController : ControllerBase
         _corsConfiguration = corsOptions.Value ?? throw new ArgumentNullException(nameof(corsOptions));
     }
 
+    // GET api/contacts?search=ski
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [SwaggerOperation(
@@ -51,7 +52,6 @@ public class ContactsController : ControllerBase
     [SwaggerResponse(StatusCodes.Status200OK, "A list of contacts", typeof(IEnumerable<ContactDto>))]
     [SwaggerResponse(StatusCodes.Status406NotAcceptable, "The Accept header must be application/json or application/xml")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "There was an error while processing the request")]
-    // GET api/contacts?search=ski
     public async Task<ActionResult<IEnumerable<ContactDto>>> GetContacts(
         [FromQuery] 
         [SwaggerParameter("The search string used to filter the contacts", Required = false)]

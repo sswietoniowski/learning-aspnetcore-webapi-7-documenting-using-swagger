@@ -64,6 +64,7 @@ Original course materials can be found [here](https://app.pluralsight.com/librar
     - [Branding the UI by Injecting a Custom Index Page](#branding-the-ui-by-injecting-a-custom-index-page)
   - [Extras](#extras)
     - [NSwag \& Redoc](#nswag--redoc)
+    - [Minimal API Documentation](#minimal-api-documentation)
   - [Summary](#summary)
 
 ## Setup
@@ -1855,6 +1856,10 @@ Couple points in the end:
 - one might use ReDoc UI without using NSwag to generate documentation, as it is able to consume the documentation created with Swashbuckle, and can be [added](https://dev.to/caiocesar/swagger-and-redoc-for-documenting-web-api-in-net-5-2ba0) independently.
 
 So in the future I would rather use Swashbuckle as it is supported out of the box and I can use it the way I like it, but I will check out what NSwag & Redoc has to offer from time to time.
+
+### Minimal API Documentation
+
+To see how to document minimal API, you can visit [this](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-building-minimal-apis) repository and read [this](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-building-minimal-apis#documenting-your-minimal-api) description.
 
 ## Summary
 
