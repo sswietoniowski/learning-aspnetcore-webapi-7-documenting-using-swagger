@@ -141,20 +141,22 @@ builder.Services.AddSwaggerGen(options =>
             Description = "Input your username and password to access this API"
         });
 
-    options.AddSecurityRequirement(
-        new OpenApiSecurityRequirement
-        {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "basicAuth"
-                    }
-                }, new List<string>()
-            }
-        });
+    // replaced by AuthRequirementFilter
+    //options.AddSecurityRequirement(
+    //    new OpenApiSecurityRequirement
+    //    {
+    //        {
+    //            new OpenApiSecurityScheme
+    //            {
+    //                Reference = new OpenApiReference
+    //                {
+    //                    Type = ReferenceType.SecurityScheme,
+    //                    Id = "basicAuth"
+    //                }
+    //            }, new List<string>()
+    //        }
+    //    });
+    options.OperationFilter<AuthRequirementFilter>();
 
     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {

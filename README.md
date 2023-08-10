@@ -1860,7 +1860,146 @@ So in the future I would rather use Swashbuckle as it is supported out of the bo
 
 ### Filter-based Swagger Customization
 
-TODO: add description
+Swashbuckle exposes a convenient filter-based API to customize the generated Swagger document.
+
+To implement a filter, you need to implement one of the following interfaces:
+
+- `IDocumentFilter` - to customize the whole `swagger.json` file,
+- `IOperationFilter` - to customize operations/endpoints,
+- `IParameterFilter` - to customize the operations’ query string input parameters,
+- `IRequestBodyFilter` - to customize the operations’ request body input parameters,
+- `ISchemaFilter` - to customize the input parameters’ default schema.
+
+Couple ideas for using filters:
+
+- emphasizing the authorization requirements for each operation,
+- changing the application title,
+- adding a warning text for passwords.
+
+Sofar our Swagger UI looks like this (every operation has padlock icon):
+
+![Swagger UI with padlock icons](./img/06_swagger_ui_with_padlock_icons.jpg)
+
+It is a result of using `Authorize` attribute on our controller:
+
+```csharp
+[ApiController]
+[Route("api/contacts")]
+[Produces("application/json", "application/xml")]
+[Consumes("application/json")]
+[ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+[ApiVersion("2.0")]
+[Authorize]
+public class ContactsController : ControllerBase
+{
+    // ...
+}
+```
+
+And our Swagger configuration:
+
+```csharp
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+
+    options.AddSecurityRequirement(
+        new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "basicAuth"
+                    }
+                }, new List<string>()
+            }
+        });
+
+    // ...
+}
+```
+
+The padlock icon is always shown as open, however, regardless of the endpoint’s authorization requirements, which isn’t the behavior we expect. Ideally, we want that padlock icon to appear only next to endpoints that require authorization of some sort.
+
+To achieve that we need to add a new filter:
+
+```csharp
+public class AuthRequirementFilter : IOperationFilter
+{
+    public void Apply(
+        OpenApiOperation operation,
+        OperationFilterContext context)
+    {
+        if (!context.ApiDescription
+            .ActionDescriptor
+            .EndpointMetadata
+            .OfType<AuthorizeAttribute>()
+            .Any())
+            return;
+
+        operation.Security = new List<OpenApiSecurityRequirement>
+        {
+            new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "basicAuth"
+                        }
+                    }, new List<string>()
+                }
+            }
+        };
+    }
+}
+```
+
+At the same time we need to disable `AddSecurityRequirement` in our Swagger configuration:
+
+```csharp
+    // replaced by AuthRequirementFilter
+    //options.AddSecurityRequirement(
+    //    new OpenApiSecurityRequirement
+    //    {
+    //        {
+    //            new OpenApiSecurityScheme
+    //            {
+    //                Reference = new OpenApiReference
+    //                {
+    //                    Type = ReferenceType.SecurityScheme,
+    //                    Id = "basicAuth"
+    //                }
+    //            }, new List<string>()
+    //        }
+    //    });
+```
+
+Instead we must register our filter:
+
+```csharp
+    // register Swagger generator
+    builder.Services.AddSwaggerGen(options =>
+    {
+        // ...
+
+        options.OperationFilter<AuthRequirementFilter>();
+
+        // ...
+    }
+```
+
+Now our Swagger UI looks like this (only operations that require authorization have padlock icon):
+
+![Swagger UI without padlock icons](./img/07_swagger_ui_without_padlock_icons.jpg)
+
+![Swagger UI with padlock icon](./img/08_swagger_ui_with_padlock_icon.jpg)
 
 ### Minimal API Documentation
 
@@ -1869,3 +2008,7 @@ To see how to document minimal API, you can visit [this](https://github.com/sswi
 ## Summary
 
 Now you know a little bit more about Swagger and how it can help you to document your API :-).
+
+```
+
+```
