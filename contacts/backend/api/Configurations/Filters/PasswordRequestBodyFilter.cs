@@ -3,7 +3,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Contacts.Api.Configurations.Filters;
 
-public class PasswordRequestFilter : IRequestBodyFilter
+public class PasswordRequestBodyFilter : IRequestBodyFilter
 {
     public void Apply(
         OpenApiRequestBody requestBody,

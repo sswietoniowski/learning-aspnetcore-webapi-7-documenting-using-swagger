@@ -135,7 +135,7 @@ builder.Services.AddSwaggerGen(options =>
 
     options.EnableAnnotations();
 
-    options.RequestBodyFilter<PasswordRequestFilter>();
+    options.RequestBodyFilter<PasswordRequestBodyFilter>();
 
     options.AddSecurityDefinition("basicAuth",
         new OpenApiSecurityScheme()
@@ -145,7 +145,7 @@ builder.Services.AddSwaggerGen(options =>
             Description = "Input your username and password to access this API"
         });
 
-    // replaced by AuthRequirementFilter
+    // replaced by AuthRequirementOperationFilter
     //options.AddSecurityRequirement(
     //    new OpenApiSecurityRequirement
     //    {
@@ -160,7 +160,7 @@ builder.Services.AddSwaggerGen(options =>
     //            }, new List<string>()
     //        }
     //    });
-    options.OperationFilter<AuthRequirementFilter>();
+    options.OperationFilter<AuthRequirementOperationFilter>();
 
     foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
     {

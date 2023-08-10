@@ -4,7 +4,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace Contacts.Api.Configurations.Filters;
 
-public class AuthRequirementFilter : IOperationFilter
+public class AuthRequirementOperationFilter : IOperationFilter
 {
     public void Apply(
         OpenApiOperation operation,
