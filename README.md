@@ -6,6 +6,8 @@ Based on this course [Documenting an ASP.NET Core 6 Web API Using Swagger](https
 
 Original course materials can be found [here](https://app.pluralsight.com/library/courses/asp-dot-net-core-6-web-api-documenting-swagger/exercise-files) and [here](https://github.com/KevinDockx/DocumentingAspNetCore6API).
 
+I've also added couple ideas found in this book [Building Web APIs with ASP.NET Core](https://learning.oreilly.com/library/view/building-web-apis/9781633439481/) [📁](https://github.com/Darkseal/ASP.NET-Core-Web-API).
+
 ## Table of Contents
 
 - [Learning ASP.NET Core - WebAPI (.NET 7) Documenting Using Swagger](#learning-aspnet-core---webapi-net-7-documenting-using-swagger)
