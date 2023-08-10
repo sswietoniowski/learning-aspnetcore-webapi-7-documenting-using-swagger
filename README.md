@@ -2001,6 +2001,83 @@ Now our Swagger UI looks like this (only operations that require authorization h
 
 ![Swagger UI with padlock icon](./img/08_swagger_ui_with_padlock_icon.jpg)
 
+We could also use a filter to change the application title.
+
+To do that we need to add a new filter:
+
+```csharp
+public class CustomDocumentFilter : IDocumentFilter
+{
+    public void Apply(
+        OpenApiDocument swaggerDoc,
+        DocumentFilterContext context)
+    {
+        swaggerDoc.Info.Title = "Contacts Application API";
+    }
+}
+```
+
+And then register it:
+
+```csharp
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    options.DocumentFilter<CustomDocumentFilter>();
+
+    // ...
+}
+```
+
+We can see the result:
+
+![Swagger UI with custom title](./img/09_swagger_ui_with_custom_title.jpg)
+
+Finally we might want to add a warning text for passwords.
+
+To do that we need to add a new filter:
+
+```csharp
+public class PasswordRequestFilter : IRequestBodyFilter
+{
+    public void Apply(
+        OpenApiRequestBody requestBody,
+        RequestBodyFilterContext context)
+    {
+        var fieldName = "password";
+
+        if (context.BodyParameterDescription.Name
+                .Equals(fieldName,
+                    StringComparison.OrdinalIgnoreCase)
+            || context.BodyParameterDescription.Type
+                .GetProperties().Any(p => p.Name
+                    .Equals(fieldName,
+                        StringComparison.OrdinalIgnoreCase)))
+        {
+            requestBody.Description =
+                "IMPORTANT: be sure to always use a strong password " +
+                "and store it in a secure location!";
+        }
+    }
+}
+```
+
+And then register it:
+
+```csharp
+// register Swagger generator
+builder.Services.AddSwaggerGen(options =>
+{
+    // ...
+
+    options.RequestBodyFilter<PasswordRequestFilter>();
+
+    // ...
+}
+```
+
+Now any endpoint that accepts a password will have a warning text.
+
 ### Minimal API Documentation
 
 To see how to document minimal API, you can visit [this](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-building-minimal-apis) repository and read [this](https://github.com/sswietoniowski/learning-aspnetcore-webapi-7-building-minimal-apis#documenting-your-minimal-api) description.
@@ -2008,7 +2085,3 @@ To see how to document minimal API, you can visit [this](https://github.com/sswi
 ## Summary
 
 Now you know a little bit more about Swagger and how it can help you to document your API :-).
-
-```
-
-```
